@@ -7,6 +7,10 @@ import com.quinn.virginactive.UserRepo
 import com.quinn.virginactive.auth.AuthApi
 import com.quinn.virginactive.auth.KtorAuthApi
 import com.quinn.virginactive.auth.usecases.LoginUseCase
+import com.quinn.virginactive.home.HomeApi
+import com.quinn.virginactive.home.KtorHomeApi
+import com.quinn.virginactive.home.mappers.HomeViewDataMapper
+import com.quinn.virginactive.home.usecases.GetHomeViewDataUseCase
 import com.quinn.virginactive.user.KtorProfileApi
 import com.quinn.virginactive.user.ProfileApi
 import com.quinn.virginactive.user.UserMapper
@@ -133,5 +137,19 @@ fun sharedModule(platformDeviceIO: PlatformDeviceIO) = module {
             userManager = get()
         )
     }
+
+    single {
+        KtorHomeApi(
+            httpClient = get()
+        )
+    }.bind<HomeApi>()
+
+    factory {
+        GetHomeViewDataUseCase(
+            homeApi = get(),
+            homeViewDataMapper = HomeViewDataMapper()
+        )
+    }
+
 
 }
