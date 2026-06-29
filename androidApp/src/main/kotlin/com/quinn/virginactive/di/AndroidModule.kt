@@ -2,6 +2,7 @@ package com.quinn.virginactive.di
 
 import com.quinn.virginactive.home.HomeViewModel
 import com.quinn.virginactive.login.LoginViewModel
+import com.quinn.virginactive.timetable.TimetableViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -17,6 +18,13 @@ fun androidModule() = module {
     viewModel {
         HomeViewModel(
             getHomeViewDataUseCase = get()
+        )
+    }
+
+    viewModel {
+        TimetableViewModel(
+            getClassesViewDataUseCase = get(),
+            userManager = get()
         )
     }
 }

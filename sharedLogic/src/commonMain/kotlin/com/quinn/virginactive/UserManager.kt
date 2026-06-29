@@ -13,10 +13,18 @@ import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 
+sealed class UserState {
+    object Loading : UserState()
+    data class LoggedIn(val user: User) : UserState()
+    object LoggedOut : UserState()
+}
+
 interface UserRepo {
-    fun observeUserState() : StateFlow<UserManager.UserState>
+    fun observeUserState() : StateFlow<UserState>
 
     suspend fun login(request: LoginRequest)
+
+    fun getUserStateSnapshot() : UserState
 }
 
 class UserManager internal constructor(
@@ -26,12 +34,6 @@ class UserManager internal constructor(
     private val userMapper: UserMapper,
     private val profileApi: ProfileApi
 ): UserRepo {
-
-    sealed class UserState {
-        object Loading : UserState()
-        data class LoggedIn(val user: User) : UserState()
-        object LoggedOut : UserState()
-    }
 
     init {
         getProfileOnLogin()
@@ -72,5 +74,9 @@ class UserManager internal constructor(
             }
 
         }
+    }
+
+    override fun getUserStateSnapshot(): UserState {
+        return userState.value
     }
 }

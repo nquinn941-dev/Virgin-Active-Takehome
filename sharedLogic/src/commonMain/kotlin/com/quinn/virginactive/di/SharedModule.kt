@@ -11,6 +11,12 @@ import com.quinn.virginactive.home.HomeApi
 import com.quinn.virginactive.home.KtorHomeApi
 import com.quinn.virginactive.home.mappers.HomeViewDataMapper
 import com.quinn.virginactive.home.usecases.GetHomeViewDataUseCase
+import com.quinn.virginactive.timetable.ClassRepository
+import com.quinn.virginactive.timetable.mappers.ClassListViewDataMapper
+import com.quinn.virginactive.timetable.networking.ClassApi
+import com.quinn.virginactive.timetable.networking.KtorClassApi
+import com.quinn.virginactive.timetable.usecases.GetClassViewDataUseCase
+import com.quinn.virginactive.timetable.usecases.GetClassesViewDataUseCase
 import com.quinn.virginactive.user.KtorProfileApi
 import com.quinn.virginactive.user.ProfileApi
 import com.quinn.virginactive.user.UserMapper
@@ -151,5 +157,29 @@ fun sharedModule(platformDeviceIO: PlatformDeviceIO) = module {
         )
     }
 
+    single {
+        KtorClassApi(
+            httpClient = get()
+        )
+    }.bind<ClassApi>()
+
+    single {
+        ClassRepository(
+            classApi = get(),
+            classListViewDataMapper = ClassListViewDataMapper()
+        )
+    }
+
+    factory {
+        GetClassesViewDataUseCase(
+            classRepository = get()
+        )
+    }
+
+    factory {
+        GetClassViewDataUseCase(
+            classRepository = get()
+        )
+    }
 
 }

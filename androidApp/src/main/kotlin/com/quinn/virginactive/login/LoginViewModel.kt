@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quinn.virginactive.UserManager
+import com.quinn.virginactive.UserState
 import com.quinn.virginactive.auth.usecases.LoginUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,9 +38,9 @@ internal class LoginViewModel constructor(
         viewModelScope.launch {
             userManager.observeUserState().collectLatest {
                 _state.value = when (it) {
-                    UserManager.UserState.Loading -> State.Loading
-                    UserManager.UserState.LoggedOut -> State.LogInRequired
-                    is UserManager.UserState.LoggedIn -> State.LoginSuccessful
+                    UserState.Loading -> State.Loading
+                    UserState.LoggedOut -> State.LogInRequired
+                    is UserState.LoggedIn -> State.LoginSuccessful
                 }
             }
         }

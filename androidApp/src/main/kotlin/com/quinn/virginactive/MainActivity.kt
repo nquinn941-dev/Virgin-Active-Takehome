@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.quinn.virginactive.home.HomeScreen
 import com.quinn.virginactive.login.LoginScreen
+import com.quinn.virginactive.timetable.TimetableScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -19,6 +20,9 @@ object Login
 
 @Serializable
 object Home
+
+@Serializable
+object Timetable
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +42,13 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable<Home> {
-                    HomeScreen()
+                    HomeScreen(
+                        viewTimetable = { navController.navigate(Timetable) }
+                    )
+                }
+
+                composable<Timetable> {
+                    TimetableScreen()
                 }
             }
         }

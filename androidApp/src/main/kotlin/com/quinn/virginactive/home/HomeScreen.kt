@@ -29,7 +29,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 internal fun HomeScreen(
-
+    viewTimetable: () -> Unit
 ) {
     val viewModel = koinViewModel<HomeViewModel>()
     val state by viewModel.state.collectAsState()
@@ -40,14 +40,16 @@ internal fun HomeScreen(
 
     HomeContent(
         state = state,
-        retry = viewModel::load
+        retry = viewModel::load,
+        viewTimetable = viewTimetable
     )
 }
 
 @Composable
 private fun HomeContent(
     state: HomeViewModel.State,
-    retry: () -> Unit
+    retry: () -> Unit,
+    viewTimetable: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -73,7 +75,8 @@ private fun HomeContent(
 
             is HomeViewModel.State.Loaded -> {
                 LoadedHomeContent(
-                    viewData =  state.homeViewData
+                    viewData =  state.homeViewData,
+                    viewTimetable = viewTimetable
                 )
             }
         }
@@ -82,7 +85,8 @@ private fun HomeContent(
 
 @Composable
 private fun LoadedHomeContent(
-    viewData: HomeViewData
+    viewData: HomeViewData,
+    viewTimetable: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -90,7 +94,7 @@ private fun LoadedHomeContent(
     ) {
         items(viewData.items) { item ->
             when (item) {
-                is GreetingItemViewData -> GreetingCard(item)
+                is GreetingItemViewData -> GreetingCard(item, viewTimetable)
                 is HeroItemViewData -> HeroCard(item)
                 is MyClubItemViewData -> MyClubCard(item)
                 is ClassCarouselItemViewData -> ClassCarouselCard(item)

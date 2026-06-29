@@ -1,5 +1,6 @@
 package com.quinn.virginactive.home.uicompose
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,11 +27,11 @@ import com.quinn.virginactive.home.PromotionItemViewData
 
 
 @Composable
-fun GreetingCard(item: GreetingItemViewData) {
+fun GreetingCard(item: GreetingItemViewData, viewTimetable: () -> Unit) {
     Text(
         text = item.title,
         style = MaterialTheme.typography.headlineSmall,
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier.padding(16.dp).clickable { viewTimetable() }
     )
 }
 
