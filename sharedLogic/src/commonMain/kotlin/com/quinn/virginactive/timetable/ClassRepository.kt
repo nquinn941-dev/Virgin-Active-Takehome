@@ -41,12 +41,9 @@ internal class ClassRepository constructor(
     }
 
     suspend fun bookClass(classId: String): ClassViewData {
-        val classToBeBooked =
-            _classes.value.classesPerDay.flatMap { it.value }.firstOrNull { it.classId == classId }
-                ?: throw IllegalStateException("Couldn't find class for id $classId")
         val user = (userManager.getUserStateSnapshot() as? UserState.LoggedIn)?.user ?: throw IllegalStateException("Not Logged in")
 
-        val response = classApi.bookClass(user.clubInfo.id, classToBeBooked.classId)
+        val response = classApi.bookClass(user.clubInfo.id, classId)
 
 
         val bookingConfirmationStatus = response.waitlistPosition?.let {
