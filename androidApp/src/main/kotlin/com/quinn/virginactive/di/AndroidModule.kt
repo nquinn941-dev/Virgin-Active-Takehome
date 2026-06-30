@@ -32,7 +32,8 @@ fun androidModule() = module {
     viewModel {
         ClassDetailsViewModel(
             getClassViewDataUseCase = get(),
-            bookClassUseCase = get()
+            bookClassUseCase = get(),
+            cancelBookingUseCase = get()
         )
     }
 }

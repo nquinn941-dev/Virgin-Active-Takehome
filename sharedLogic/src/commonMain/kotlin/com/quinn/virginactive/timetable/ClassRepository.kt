@@ -61,4 +61,11 @@ internal class ClassRepository constructor(
         val bookedClassViewData = classListViewDataMapper.mapToClassViewData(response.classInstance, classConfirmationDetails)
         return bookedClassViewData
     }
+
+    suspend fun cancelClassBooking(classId: String) {
+        val user = (userManager.getUserStateSnapshot() as? UserState.LoggedIn)?.user ?: throw IllegalStateException("Not Logged in")
+        classApi.cancelBooking(user.clubInfo.id, classId)
+        refreshClasses(user.clubInfo.id)
+
+    }
 }

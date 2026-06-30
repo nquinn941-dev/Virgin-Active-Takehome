@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.quinn.virginactive.timetable.ClassViewData
 import com.quinn.virginactive.timetable.usecases.AlreadyBookedException
 import com.quinn.virginactive.timetable.usecases.BookClassUseCase
+import com.quinn.virginactive.timetable.usecases.CancelBookingUseCase
 import com.quinn.virginactive.timetable.usecases.ClassInPastException
 import com.quinn.virginactive.timetable.usecases.GetClassViewDataUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,8 @@ import kotlinx.coroutines.launch
 
 internal class ClassDetailsViewModel constructor(
     val getClassViewDataUseCase: GetClassViewDataUseCase,
-    val bookClassUseCase: BookClassUseCase
+    val bookClassUseCase: BookClassUseCase,
+    val cancelBookingUseCase: CancelBookingUseCase
 ) : ViewModel() {
 
     sealed class State {
@@ -75,5 +77,21 @@ internal class ClassDetailsViewModel constructor(
                 _bookingState.value = BookingState.Error(errorMessage)
             }
         }
+    }
+
+    fun cancelClass(classId: String) {
+        if (_state.value !is State.Loaded) return
+        val existingLoadedState = (_state.value as State.Loaded)
+        _state.value = State.Loading
+        viewModelScope.launch {
+            try {
+                cancelBookingUseCase.cancelBooking(classId)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                _state.value = existingLoadedState
+                _bookingState.value = BookingState.Error("Something went wrong, please try again")
+            }
+        }
+
     }
 }

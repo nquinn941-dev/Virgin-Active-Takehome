@@ -16,6 +16,7 @@ import com.quinn.virginactive.timetable.mappers.ClassListViewDataMapper
 import com.quinn.virginactive.timetable.networking.ClassApi
 import com.quinn.virginactive.timetable.networking.KtorClassApi
 import com.quinn.virginactive.timetable.usecases.BookClassUseCase
+import com.quinn.virginactive.timetable.usecases.CancelBookingUseCase
 import com.quinn.virginactive.timetable.usecases.GetClassViewDataUseCase
 import com.quinn.virginactive.timetable.usecases.GetClassesViewDataUseCase
 import com.quinn.virginactive.user.KtorProfileApi
@@ -186,6 +187,12 @@ fun sharedModule(platformDeviceIO: PlatformDeviceIO) = module {
 
     factory {
         BookClassUseCase(
+            classRepository = get()
+        )
+    }
+
+    factory {
+        CancelBookingUseCase(
             classRepository = get()
         )
     }

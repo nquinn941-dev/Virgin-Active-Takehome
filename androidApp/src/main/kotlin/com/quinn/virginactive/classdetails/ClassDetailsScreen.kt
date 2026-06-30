@@ -37,19 +37,19 @@ import org.koin.compose.viewmodel.koinViewModel
 
 object ClassDetailColors {
     val Background = Color(0xFFFFFFFF)
-    val SurfaceMuted = Color(0xFFF2F2F4)   // detail card, set reminder button
+    val SurfaceMuted = Color(0xFFF2F2F4)
     val TextPrimary = Color(0xFF15171A)
     val TextSecondary = Color(0xFF7A7D85)
-    val PillRed = Color(0xFFE3473F)        // class type pill (e.g. YOGA)
+    val PillRed = Color(0xFFE3473F)
     val PillRedText = Color(0xFFFFFFFF)
-    val Mint = Color(0xFFCFF6E4)           // booked / confirmed banners
+    val Mint = Color(0xFFCFF6E4)
     val MintText = Color(0xFF0E7A4F)
-    val Amber = Color(0xFFFCEFC7)          // starts-within-12-hours banner
+    val Amber = Color(0xFFFCEFC7)
     val AmberBorder = Color(0xFFE8B23A)
     val AmberText = Color(0xFF8A6510)
-    val Coral = Color(0xFFFCE3E1)          // full / waitlist banners
+    val Coral = Color(0xFFFCE3E1)
     val CoralText = Color(0xFFB23A2E)
-    val Danger = Color(0xFFE3473F)         // cancel booking text
+    val Danger = Color(0xFFE3473F)
 }
 
 @Composable
@@ -68,7 +68,7 @@ internal fun ClassDetailsScreen(
         state = state,
         retry = { viewModel.loadClassDetails(id) },
         bookClass = { viewModel.bookClass(id) },
-        cancelClass = { },
+        cancelClass = { viewModel.cancelClass(id) },
         setReminder = { }
     )
 
