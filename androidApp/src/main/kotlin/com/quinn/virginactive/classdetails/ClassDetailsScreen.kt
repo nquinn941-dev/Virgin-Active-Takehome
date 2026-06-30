@@ -60,6 +60,7 @@ internal fun ClassDetailsScreen(
 
     val viewModel = koinViewModel<ClassDetailsViewModel>()
     val state by viewModel.state.collectAsState()
+    val bookingState by viewModel.state.collectAsState()
 
     LaunchedEffect(id) {
         viewModel.loadClassDetails(classId = id)
@@ -72,6 +73,11 @@ internal fun ClassDetailsScreen(
         cancelClass = { viewModel.cancelClass(id) },
         setReminder = { }
     )
+
+    if (bookingState is ClassDetailsViewModel.State.Error) {
+        val error = (bookingState as ClassDetailsViewModel.State.Error).message
+        //TODO Show snackbar with the error
+    }
 
 
 }
