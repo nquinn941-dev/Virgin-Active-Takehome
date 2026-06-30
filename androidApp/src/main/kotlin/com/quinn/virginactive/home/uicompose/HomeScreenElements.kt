@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,10 +29,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.quinn.virginactive.R
 import com.quinn.virginactive.home.CarouselItemViewData
 import com.quinn.virginactive.home.ClassCarouselItemViewData
 import com.quinn.virginactive.home.GreetingItemViewData
@@ -52,11 +55,10 @@ object HomeColors {
 }
 
 @Composable
-fun GreetingCard(item: GreetingItemViewData, viewTimetable: () -> Unit) {
+fun GreetingCard(item: GreetingItemViewData) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { viewTimetable() }
             .padding(horizontal = 20.dp, vertical = 18.dp)
     ) {
         Text(
@@ -68,8 +70,6 @@ fun GreetingCard(item: GreetingItemViewData, viewTimetable: () -> Unit) {
         )
     }
 }
-
-// ---------- Hero ----------
 
 @Composable
 fun HeroCard(item: HeroItemViewData) {
@@ -110,11 +110,8 @@ fun HeroCard(item: HeroItemViewData) {
     }
 }
 
-// ---------- My Club ----------
-
 @Composable
 fun MyClubCard(item: MyClubItemViewData) {
-    val isOpen = !item.openingHoursToday.lowercase().contains("closed")
 
     Card(
         modifier = Modifier
@@ -126,24 +123,6 @@ fun MyClubCard(item: MyClubItemViewData) {
         border = androidx.compose.foundation.BorderStroke(1.dp, HomeColors.Graphite700)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(if (isOpen) HomeColors.Lime else HomeColors.Coral)
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = if (isOpen) "OPEN TODAY" else "CLOSED TODAY",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 1.2.sp,
-                    color = if (isOpen) HomeColors.Lime else HomeColors.Coral
-                )
-            }
-
-            Spacer(Modifier.height(10.dp))
 
             Text(
                 text = item.name,
@@ -161,19 +140,26 @@ fun MyClubCard(item: MyClubItemViewData) {
     }
 }
 
-// ---------- Class carousel ----------
-
 @Composable
-fun ClassCarouselCard(item: ClassCarouselItemViewData, viewClassDetails : (String) -> Unit) {
+fun ClassCarouselCard(item: ClassCarouselItemViewData, viewTimetable: () -> Unit, viewClassDetails : (String) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(
-            text = item.title,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.ExtraBold,
-            letterSpacing = (-0.2).sp,
-            color = HomeColors.Graphite800,
-            modifier = Modifier.padding(horizontal = 20.dp)
-        )
+        Row(modifier = Modifier.fillMaxWidth().clickable { viewTimetable() }, verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = item.title,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.ExtraBold,
+                letterSpacing = (-0.2).sp,
+                color = HomeColors.Graphite800,
+                modifier = Modifier.padding(horizontal = 20.dp)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                painterResource(R.drawable.ic_right_arrow),
+                contentDescription = item.title,
+                modifier = Modifier.size(16.dp),
+            )
+        }
+
 
         LazyRow(
             contentPadding = PaddingValues(horizontal = 20.dp),
@@ -257,11 +243,10 @@ fun ClassItemCard(item: CarouselItemViewData, viewClassDetails : (String) -> Uni
     }
 }
 
-// ---------- Rewards ----------
-
 @Composable
 fun MyRewardsCard(item: MyRewardsItemViewData) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = item.title,
             fontSize = 20.sp,
@@ -298,8 +283,15 @@ fun RewardItemCard(item: CarouselItemViewData) {
                 modifier = Modifier
                     .size(38.dp)
                     .clip(CircleShape)
-                    .background(HomeColors.Lime)
-            )
+                    .background(HomeColors.Lime),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painterResource(item.imageRef.toIconResource()),
+                    contentDescription = item.imageRef,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
             Spacer(Modifier.width(12.dp))
             Column {
                 Text(
@@ -334,8 +326,6 @@ fun RewardItemCard(item: CarouselItemViewData) {
     }
 }
 
-// ---------- Promotion ----------
-
 @Composable
 fun PromotionCard(item: PromotionItemViewData) {
     Card(
@@ -367,7 +357,15 @@ fun PromotionCard(item: PromotionItemViewData) {
                 fontSize = 14.sp,
                 color = HomeColors.Ink.copy(alpha = 0.75f)
             )
-            // TODO replace with Coil AsyncImage using item.imageRef
         }
+    }
+}
+
+private fun String?.toIconResource(): Int {
+    return when (this) {
+        "reward_smoothie" -> R.drawable.ic_smoothie
+        "reward_retail" -> R.drawable.ic_reward_retail
+        "reward_guest" -> R.drawable.ic_guest
+        else -> R.drawable.ic_reward_default
     }
 }

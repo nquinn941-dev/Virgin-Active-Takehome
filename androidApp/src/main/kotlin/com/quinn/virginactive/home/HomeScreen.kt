@@ -103,10 +103,14 @@ private fun LoadedHomeContent(
     ) {
         items(viewData.items) { item ->
             when (item) {
-                is GreetingItemViewData -> GreetingCard(item, viewTimetable)
+                is GreetingItemViewData -> GreetingCard(item)
                 is HeroItemViewData -> HeroCard(item)
                 is MyClubItemViewData -> MyClubCard(item)
-                is ClassCarouselItemViewData -> ClassCarouselCard(item, viewClassDetails)
+                is ClassCarouselItemViewData -> ClassCarouselCard(
+                    item = item,
+                    viewTimetable = viewTimetable,
+                    viewClassDetails = viewClassDetails
+                )
                 is MyRewardsItemViewData -> MyRewardsCard(item)
                 is PromotionItemViewData -> PromotionCard(item)
             }
