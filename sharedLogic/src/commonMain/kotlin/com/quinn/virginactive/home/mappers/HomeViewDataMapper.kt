@@ -51,8 +51,7 @@ class HomeViewDataMapper internal constructor() {
                                 subtitle = item.subtitle,
                                 imageRef = item.imageRef,
                                 badge = item.badge,
-                                startTime = item.startsAt,
-                                date = null,
+                                startTime = item.startsAt.convertToReadableDate(),
                                 actionLabel = item.actionLabel,
                                 actionType = CarouselItemViewData.HomeViewDataActionType(
                                     type = item.actionRef.type,
@@ -73,7 +72,6 @@ class HomeViewDataMapper internal constructor() {
                                 imageRef = item.imageRef,
                                 badge = item.badge,
                                 startTime = null,
-                                date = null,
                                 actionLabel = null,
                                 actionType = null
                             )
@@ -96,7 +94,6 @@ class HomeViewDataMapper internal constructor() {
                                 imageRef = item.imageRef,
                                 badge = item.badge,
                                 startTime = null,
-                                date = null,
                                 actionLabel = null,
                                 actionType = null
                             )
@@ -107,4 +104,11 @@ class HomeViewDataMapper internal constructor() {
             }
         )
     }
+}
+
+private fun String.convertToReadableDate() : String {
+    val date = this.split("T").first()
+    val time = this.substringAfter("T").substringBeforeLast("+")
+    val (_, month, day) = date.split("-")
+    return "$day/$month - $time"
 }

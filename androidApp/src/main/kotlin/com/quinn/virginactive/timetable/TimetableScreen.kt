@@ -68,6 +68,7 @@ private fun TimetableContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .safeContentPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -99,8 +100,7 @@ fun LoadedClassListContent(viewData: ClassListViewData, viewDetails: (String) ->
 
     LazyColumn(
         modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .fillMaxSize(),
         contentPadding = PaddingValues(vertical = 12.dp)
     ) {
         sortedDays.forEach { (day, classes) ->

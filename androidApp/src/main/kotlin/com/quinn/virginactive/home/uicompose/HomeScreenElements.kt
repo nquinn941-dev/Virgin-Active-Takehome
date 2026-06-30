@@ -218,16 +218,15 @@ fun ClassItemCard(item: CarouselItemViewData, viewClassDetails : (String) -> Uni
 
             Spacer(Modifier.height(2.dp))
 
-            val meta = listOfNotNull(item.startTime, item.date)
-                .joinToString(" · ")
-                .ifEmpty { item.subtitle }
-            Text(
-                text = meta,
-                fontSize = 13.sp,
-                color = HomeColors.BoneDim,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            item.startTime?.let {
+                Text(
+                    text = it,
+                    fontSize = 13.sp,
+                    color = HomeColors.BoneDim,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
 
             item.actionLabel?.let {
                 Spacer(Modifier.height(10.dp))

@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -86,6 +87,7 @@ private fun ClassDetailsContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background)
             .safeContentPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -100,6 +102,7 @@ private fun ClassDetailsContent(
                     Text("Retry")
                 }
             }
+
             is ClassDetailsViewModel.State.Error -> {
                 Text(state.message)
                 Spacer(modifier = Modifier.height(16.dp))
@@ -107,6 +110,7 @@ private fun ClassDetailsContent(
                     Text("Retry")
                 }
             }
+
             is ClassDetailsViewModel.State.Loaded -> {
                 LoadedClassDetailsContent(
                     viewData = state.data,
@@ -119,6 +123,7 @@ private fun ClassDetailsContent(
                     setReminder = setReminder
                 )
             }
+
             ClassDetailsViewModel.State.Loading -> {
                 CircularProgressIndicator()
             }
@@ -133,7 +138,7 @@ private fun LoadedClassDetailsContent(
     cancelClass: () -> Unit,
     setReminder: () -> Unit
 ) {
-    Surface(color = ClassDetailColors.Background, modifier = Modifier.fillMaxSize()) {
+    Surface(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -202,8 +207,6 @@ private fun LoadedClassDetailsContent(
     }
 }
 
-// ---------- Type pill ----------
-
 @Composable
 private fun TypePill(label: String) {
     Box(
@@ -222,7 +225,6 @@ private fun TypePill(label: String) {
     }
 }
 
-// ---------- Detail card ----------
 
 @Composable
 private fun DetailCard(item: ClassViewData) {
@@ -248,25 +250,36 @@ private fun DetailRow(label: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(text = label, fontSize = 14.sp, color = ClassDetailColors.TextSecondary)
-        Text(text = value, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = ClassDetailColors.TextPrimary)
+        Text(
+            text = value,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = ClassDetailColors.TextPrimary
+        )
     }
 }
 
-// ---------- Status banner (booked / waitlisted / full / open) ----------
 
 @Composable
 private fun StatusBanner(status: ClassViewData.BookingStatus, waitlistCount: Int) {
     val (bg, text, label) = when (status) {
         ClassViewData.BookingStatus.BOOKED ->
-            Triple(ClassDetailColors.Mint, ClassDetailColors.MintText, "You are booked for this class")
+            Triple(
+                ClassDetailColors.Mint,
+                ClassDetailColors.MintText,
+                "You are booked for this class"
+            )
+
         ClassViewData.BookingStatus.WAITLISTED ->
             Triple(
                 ClassDetailColors.Coral,
                 ClassDetailColors.CoralText,
                 "You're on the waitlist" + if (waitlistCount > 0) " · position $waitlistCount" else ""
             )
+
         ClassViewData.BookingStatus.FULL ->
             Triple(ClassDetailColors.Coral, ClassDetailColors.CoralText, "This class is full")
+
         ClassViewData.BookingStatus.OPEN ->
             Triple(ClassDetailColors.Mint, ClassDetailColors.MintText, "Spots are available")
     }
@@ -282,8 +295,6 @@ private fun StatusBanner(status: ClassViewData.BookingStatus, waitlistCount: Int
         Text(text = label, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = text)
     }
 }
-
-// ---------- Starts soon banner ----------
 
 @Composable
 private fun InfoBanner(
@@ -305,15 +316,13 @@ private fun InfoBanner(
         )
         Spacer(Modifier.width(10.dp))
         Text(
-            text = message ,
+            text = message,
             fontSize = 13.sp,
             color = ClassDetailColors.AmberText,
             lineHeight = 18.sp
         )
     }
 }
-
-// ---------- Confirmation block ----------
 
 @Composable
 private fun ConfirmationBlock(details: ClassViewData.ClassConfirmationDetails?) {
@@ -326,11 +335,12 @@ private fun ConfirmationBlock(details: ClassViewData.ClassConfirmationDetails?) 
             .padding(vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val bookingHeader = if (details.confirmationStatus is ClassViewData.ClassConfirmationDetails.ConfirmationStatus.Waitlisted) {
-            "You've been added to the waitlist - position ${(details.confirmationStatus as ClassViewData.ClassConfirmationDetails.ConfirmationStatus.Waitlisted).waitlistPosition}"
-        } else {
-            "Booking confirmed"
-        }
+        val bookingHeader =
+            if (details.confirmationStatus is ClassViewData.ClassConfirmationDetails.ConfirmationStatus.Waitlisted) {
+                "You've been added to the waitlist - position ${(details.confirmationStatus as ClassViewData.ClassConfirmationDetails.ConfirmationStatus.Waitlisted).waitlistPosition}"
+            } else {
+                "Booking confirmed"
+            }
         Text(
             text = bookingHeader,
             fontSize = 15.sp,
@@ -346,8 +356,6 @@ private fun ConfirmationBlock(details: ClassViewData.ClassConfirmationDetails?) 
     }
 }
 
-// ---------- Actions ----------
-
 @Composable
 private fun PrimaryOrSecondaryActions(
     item: ClassViewData,
@@ -359,14 +367,17 @@ private fun PrimaryOrSecondaryActions(
         ClassViewData.BookingStatus.OPEN -> {
             FilledActionButton(label = "Book Class", onClick = onBook)
         }
+
         ClassViewData.BookingStatus.FULL -> {
             FilledActionButton(label = "Join Waitlist", onClick = onBook)
         }
+
         ClassViewData.BookingStatus.WAITLISTED -> {
             SecondaryActionButton(label = "Set Reminder", onClick = onSetReminder)
             Spacer(Modifier.height(14.dp))
             DestructiveTextAction(label = "Leave Waitlist", onClick = onCancelBooking)
         }
+
         ClassViewData.BookingStatus.BOOKED -> {
             SecondaryActionButton(label = "Set Reminder", onClick = onSetReminder)
             Spacer(Modifier.height(14.dp))
@@ -401,7 +412,12 @@ private fun SecondaryActionButton(label: String, onClick: () -> Unit) {
             .padding(vertical = 16.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = label, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = ClassDetailColors.TextPrimary)
+        Text(
+            text = label,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = ClassDetailColors.TextPrimary
+        )
     }
 }
 
@@ -414,6 +430,11 @@ private fun DestructiveTextAction(label: String, onClick: () -> Unit) {
             .padding(vertical = 8.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = label, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = ClassDetailColors.Danger)
+        Text(
+            text = label,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = ClassDetailColors.Danger
+        )
     }
 }

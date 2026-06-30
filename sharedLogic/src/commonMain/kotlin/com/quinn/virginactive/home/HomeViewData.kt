@@ -51,7 +51,6 @@ data class CarouselItemViewData(
     val imageRef: String?,
     val badge: String?,
     val startTime: String?,
-    val date: String?,
     val actionLabel: String?,
     val actionType: HomeViewDataActionType?
 ) {
