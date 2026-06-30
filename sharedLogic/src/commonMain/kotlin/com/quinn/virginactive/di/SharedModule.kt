@@ -15,6 +15,7 @@ import com.quinn.virginactive.timetable.ClassRepository
 import com.quinn.virginactive.timetable.mappers.ClassListViewDataMapper
 import com.quinn.virginactive.timetable.networking.ClassApi
 import com.quinn.virginactive.timetable.networking.KtorClassApi
+import com.quinn.virginactive.timetable.usecases.BookClassUseCase
 import com.quinn.virginactive.timetable.usecases.GetClassViewDataUseCase
 import com.quinn.virginactive.timetable.usecases.GetClassesViewDataUseCase
 import com.quinn.virginactive.user.KtorProfileApi
@@ -166,7 +167,8 @@ fun sharedModule(platformDeviceIO: PlatformDeviceIO) = module {
     single {
         ClassRepository(
             classApi = get(),
-            classListViewDataMapper = ClassListViewDataMapper()
+            classListViewDataMapper = ClassListViewDataMapper(),
+            userManager = get()
         )
     }
 
@@ -178,6 +180,12 @@ fun sharedModule(platformDeviceIO: PlatformDeviceIO) = module {
 
     factory {
         GetClassViewDataUseCase(
+            classRepository = get()
+        )
+    }
+
+    factory {
+        BookClassUseCase(
             classRepository = get()
         )
     }

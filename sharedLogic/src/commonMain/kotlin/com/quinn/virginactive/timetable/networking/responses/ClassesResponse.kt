@@ -1,4 +1,4 @@
-package com.quinn.virginactive.timetable
+package com.quinn.virginactive.timetable.networking.responses
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

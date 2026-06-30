@@ -1,9 +1,11 @@
 package com.quinn.virginactive.timetable.mappers
 
 import com.quinn.virginactive.timetable.ClassListViewData
+import com.quinn.virginactive.timetable.networking.responses.ClassStatus
 import com.quinn.virginactive.timetable.ClassViewData
-import com.quinn.virginactive.timetable.ClassesResponse
-import com.quinn.virginactive.timetable.FitnessClass
+import com.quinn.virginactive.timetable.networking.responses.ClassesResponse
+import com.quinn.virginactive.timetable.networking.responses.FitnessClass
+import com.quinn.virginactive.timetable.networking.responses.UserBookingStatus
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
@@ -20,8 +22,9 @@ class ClassListViewDataMapper constructor() {
         )
     }
 
-    private fun mapToClassViewData(fitnessClass: FitnessClass) : ClassViewData {
+    fun mapToClassViewData(fitnessClass: FitnessClass, confirmationDetails: ClassViewData.ClassConfirmationDetails? = null) : ClassViewData {
         val startTimeInstant = Instant.parse(fitnessClass.startsAt)
+        val isInPast = startTimeInstant < Clock.System.now()
         return ClassViewData(
             classId = fitnessClass.classId,
             title = fitnessClass.title,
@@ -34,9 +37,20 @@ class ClassListViewDataMapper constructor() {
             } - ${fitnessClass.endsAt.substringAfter("T").substringBefore("+")}",
             availability = "${fitnessClass.available} of ${fitnessClass.spots} spots available",
             waitlistCount = fitnessClass.waitlistCount,
-            status = fitnessClass.status,
-            startsWithin12Hours = startTimeInstant.minus(12.hours) < Clock.System.now(),
-            confirmationDetails = null
+            bookingStatus = fitnessClass.toBookingStatus(),
+            startsWithin12Hours = startTimeInstant.minus(12.hours) < Clock.System.now() && !isInPast,
+            confirmationDetails = confirmationDetails,
+            isInPast = isInPast
         )
+    }
+
+    private fun FitnessClass.toBookingStatus() : ClassViewData.BookingStatus {
+        return when {
+            userBookingStatus == UserBookingStatus.WAITLISTED -> ClassViewData.BookingStatus.WAITLISTED
+            userBookingStatus == UserBookingStatus.BOOKED -> ClassViewData.BookingStatus.BOOKED
+            status == ClassStatus.AVAILABLE -> ClassViewData.BookingStatus.OPEN
+            status == ClassStatus.FULL -> ClassViewData.BookingStatus.FULL
+            else -> ClassViewData.BookingStatus.OPEN
+        }
     }
 }

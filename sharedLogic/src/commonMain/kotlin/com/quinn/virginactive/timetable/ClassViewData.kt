@@ -14,11 +14,25 @@ data class ClassViewData(
     val time: String,
     val availability: String,
     val waitlistCount: Int,
-    val status: ClassStatus,
+    val bookingStatus: BookingStatus,
     val startsWithin12Hours: Boolean,
-    val confirmationDetails: ClassConfirmationDetails?
+    val confirmationDetails: ClassConfirmationDetails?,
+    val isInPast: Boolean
 ) {
     data class ClassConfirmationDetails(
-        val bookingId: String
-    )
+        val bookingId: String,
+        val confirmationStatus: ConfirmationStatus
+    ) {
+        sealed class ConfirmationStatus {
+            data object Confirmed : ConfirmationStatus()
+            data class Waitlisted(val waitlistPosition: Int) : ConfirmationStatus()
+        }
+    }
+
+    enum class BookingStatus {
+        OPEN,
+        FULL,
+        BOOKED,
+        WAITLISTED
+    }
 }

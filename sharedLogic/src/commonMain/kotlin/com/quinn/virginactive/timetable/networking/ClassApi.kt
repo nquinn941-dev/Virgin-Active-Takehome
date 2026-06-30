@@ -1,15 +1,18 @@
 package com.quinn.virginactive.timetable.networking
 
-import com.quinn.virginactive.timetable.ClassesResponse
+import com.quinn.virginactive.timetable.networking.responses.ClassBookingResponse
+import com.quinn.virginactive.timetable.networking.responses.ClassesResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
 interface ClassApi {
     suspend fun getTimetable(clubId: String, date: String?) : ClassesResponse
+    suspend fun bookClass(clubId: String, classId: String) : ClassBookingResponse
 }
 
 internal class KtorClassApi(
@@ -29,4 +32,8 @@ internal class KtorClassApi(
             contentType(ContentType.Application.Json)
         }.body()
 
+    override suspend fun bookClass(clubId: String, classId: String): ClassBookingResponse =
+        httpClient.post(urlString = "${baseUrl}/clubs/$clubId/classes/$classId/bookings") {
+            contentType(ContentType.Application.Json)
+        }.body()
 }

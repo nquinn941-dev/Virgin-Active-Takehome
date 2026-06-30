@@ -2,6 +2,7 @@ package com.quinn.virginactive.timetable
 
 import android.text.format.Time
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,7 +40,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun TimetableScreen(
-
+    viewDetails: (String) -> Unit
 ) {
     val viewModel = koinViewModel<TimetableViewModel>()
     val state by viewModel.state.collectAsState()
@@ -51,7 +51,8 @@ fun TimetableScreen(
 
     TimetableContent(
         state = state,
-        retry = viewModel::loadTimetable
+        retry = viewModel::loadTimetable,
+        viewDetails = viewDetails
     )
 
 
@@ -60,7 +61,8 @@ fun TimetableScreen(
 @Composable
 private fun TimetableContent(
     state: TimetableViewModel.State,
-    retry: () -> Unit
+    retry: () -> Unit,
+    viewDetails: (String) -> Unit
 ) {
 
     Column(
@@ -84,7 +86,7 @@ private fun TimetableContent(
             }
 
             is TimetableViewModel.State.Loaded -> {
-                LoadedClassListContent(viewData = state.data)
+                LoadedClassListContent(viewData = state.data, viewDetails = viewDetails)
             }
         }
 
@@ -92,7 +94,7 @@ private fun TimetableContent(
 }
 
 @Composable
-fun LoadedClassListContent(viewData: ClassListViewData) {
+fun LoadedClassListContent(viewData: ClassListViewData, viewDetails: (String) -> Unit) {
     val sortedDays = viewData.classesPerDay.entries.sortedBy { it.key }
 
     LazyColumn(
@@ -102,23 +104,20 @@ fun LoadedClassListContent(viewData: ClassListViewData) {
         contentPadding = PaddingValues(vertical = 12.dp)
     ) {
         sortedDays.forEach { (day, classes) ->
-            // Sticky day header
             item(key = "header_$day") {
                 DayHeader(day = day)
             }
 
-            // Class cards for that day
             items(items = classes, key = { it.classId }) { classViewData ->
                 ClassCard(
                     viewData = classViewData,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                    viewDetails = viewDetails
                 )
             }
         }
     }
 }
-
-// ── Day header ────────────────────────────────────────────────────────────────
 
 @Composable
 fun DayHeader(day: String) {
@@ -136,24 +135,15 @@ fun DayHeader(day: String) {
     )
 }
 
-// ── Class card ────────────────────────────────────────────────────────────────
-
 @Composable
-fun ClassCard(viewData: ClassViewData, modifier: Modifier = Modifier) {
+fun ClassCard(viewData: ClassViewData, modifier: Modifier = Modifier, viewDetails: (String) -> Unit) {
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().clickable { viewDetails(viewData.classId) },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (viewData.startsWithin12Hours)
-                MaterialTheme.colorScheme.primaryContainer
-            else
-                MaterialTheme.colorScheme.surface
-        )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
 
-            // Top row: title + status badge
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -167,12 +157,12 @@ fun ClassCard(viewData: ClassViewData, modifier: Modifier = Modifier) {
                     modifier = Modifier.weight(1f)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                StatusBadge(status = viewData.status)
+                StatusBadge(status = viewData.bookingStatus)
             }
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Subtitle row: type · trainer
+
             Text(
                 text = "${viewData.classDisplayType} · ${viewData.trainer}",
                 style = MaterialTheme.typography.bodySmall,
@@ -185,7 +175,6 @@ fun ClassCard(viewData: ClassViewData, modifier: Modifier = Modifier) {
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Bottom meta row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -193,35 +182,18 @@ fun ClassCard(viewData: ClassViewData, modifier: Modifier = Modifier) {
             ) {
                 MetaItem(label = "Time", value = viewData.time)
                 MetaItem(label = "Availability", value = viewData.availability)
-
-//                if (viewData.status == ClassStatus.WAITLIST && viewData.waitlistCount > 0) {
-//                    MetaItem(label = "Waitlist", value = "${viewData.waitlistCount}")
-//                }
-
-                viewData.confirmationDetails?.let {
-                    MetaItem(label = "Booking", value = "#${it.bookingId}")
-                }
-            }
-
-            // "Starts soon" pill
-            if (viewData.startsWithin12Hours) {
-                Spacer(modifier = Modifier.height(10.dp))
-                StartsSoonPill()
             }
         }
     }
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
-
 @Composable
-fun StatusBadge(status: ClassStatus) {
+fun StatusBadge(status: ClassViewData.BookingStatus) {
     val (label, background, contentColor) = when (status) {
-        ClassStatus.AVAILABLE -> Triple("Open", Color(0xFF2E7D32), Color.White)
-        ClassStatus.FULL -> Triple("Full", Color(0xFFB71C1C), Color.White)
-//        ClassStatus.WAITLIST -> Triple("Waitlist", Color(0xFFE65100), Color.White)
-//        ClassStatus.CANCELLED -> Triple("Cancelled", Color(0xFF616161), Color.White)
-//        ClassStatus.BOOKED -> Triple("Booked", Color(0xFF1565C0), Color.White)
+        ClassViewData.BookingStatus.OPEN -> Triple("Open", Color(0xFF2E7D32), Color.White)
+        ClassViewData.BookingStatus.FULL -> Triple("Full", Color(0xFFB71C1C), Color.White)
+        ClassViewData.BookingStatus.WAITLISTED -> Triple("Waitlist", Color(0xFFE65100), Color.White)
+        ClassViewData.BookingStatus.BOOKED -> Triple("Booked", Color(0xFF1565C0), Color.White)
     }
 
     Surface(
@@ -253,22 +225,6 @@ fun MetaItem(label: String, value: String) {
             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
-        )
-    }
-}
-
-@Composable
-fun StartsSoonPill() {
-    Surface(
-        shape = RoundedCornerShape(50),
-        color = MaterialTheme.colorScheme.tertiaryContainer,
-        modifier = Modifier.wrapContentWidth()
-    ) {
-        Text(
-            text = "⏱ Starts within 12 hours",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onTertiaryContainer,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
         )
     }
 }

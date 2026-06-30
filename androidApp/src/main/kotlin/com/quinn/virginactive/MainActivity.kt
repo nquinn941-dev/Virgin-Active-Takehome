@@ -10,6 +10,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import com.quinn.virginactive.classdetails.ClassDetailsScreen
 import com.quinn.virginactive.home.HomeScreen
 import com.quinn.virginactive.login.LoginScreen
 import com.quinn.virginactive.timetable.TimetableScreen
@@ -23,6 +25,9 @@ object Home
 
 @Serializable
 object Timetable
+
+@Serializable
+data class ClassDetails(val id: String)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,12 +48,20 @@ class MainActivity : ComponentActivity() {
 
                 composable<Home> {
                     HomeScreen(
-                        viewTimetable = { navController.navigate(Timetable) }
+                        viewTimetable = { navController.navigate(Timetable) },
+                        viewClassDetails = { navController.navigate(ClassDetails(it)) }
                     )
                 }
 
                 composable<Timetable> {
-                    TimetableScreen()
+                    TimetableScreen(
+                        viewDetails = { id -> navController.navigate(ClassDetails(id)) }
+                    )
+                }
+
+                composable<ClassDetails> {
+                    val id = it.toRoute<ClassDetails>().id
+                    ClassDetailsScreen(id = id)
                 }
             }
         }

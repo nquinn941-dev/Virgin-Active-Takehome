@@ -1,5 +1,6 @@
 package com.quinn.virginactive.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,10 +19,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.quinn.virginactive.home.uicompose.ClassCarouselCard
 import com.quinn.virginactive.home.uicompose.GreetingCard
 import com.quinn.virginactive.home.uicompose.HeroCard
+import com.quinn.virginactive.home.uicompose.HomeColors.Graphite900
 import com.quinn.virginactive.home.uicompose.MyClubCard
 import com.quinn.virginactive.home.uicompose.MyRewardsCard
 import com.quinn.virginactive.home.uicompose.PromotionCard
@@ -29,7 +32,8 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 internal fun HomeScreen(
-    viewTimetable: () -> Unit
+    viewTimetable: () -> Unit,
+    viewClassDetails : (String) -> Unit
 ) {
     val viewModel = koinViewModel<HomeViewModel>()
     val state by viewModel.state.collectAsState()
@@ -41,7 +45,8 @@ internal fun HomeScreen(
     HomeContent(
         state = state,
         retry = viewModel::load,
-        viewTimetable = viewTimetable
+        viewTimetable = viewTimetable,
+        viewClassDetails = viewClassDetails
     )
 }
 
@@ -49,11 +54,13 @@ internal fun HomeScreen(
 private fun HomeContent(
     state: HomeViewModel.State,
     retry: () -> Unit,
-    viewTimetable: () -> Unit
+    viewTimetable: () -> Unit,
+    viewClassDetails : (String) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = Color.White)
             .safeContentPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -76,7 +83,8 @@ private fun HomeContent(
             is HomeViewModel.State.Loaded -> {
                 LoadedHomeContent(
                     viewData =  state.homeViewData,
-                    viewTimetable = viewTimetable
+                    viewTimetable = viewTimetable,
+                    viewClassDetails = viewClassDetails
                 )
             }
         }
@@ -86,7 +94,8 @@ private fun HomeContent(
 @Composable
 private fun LoadedHomeContent(
     viewData: HomeViewData,
-    viewTimetable: () -> Unit
+    viewTimetable: () -> Unit,
+    viewClassDetails : (String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -97,7 +106,7 @@ private fun LoadedHomeContent(
                 is GreetingItemViewData -> GreetingCard(item, viewTimetable)
                 is HeroItemViewData -> HeroCard(item)
                 is MyClubItemViewData -> MyClubCard(item)
-                is ClassCarouselItemViewData -> ClassCarouselCard(item)
+                is ClassCarouselItemViewData -> ClassCarouselCard(item, viewClassDetails)
                 is MyRewardsItemViewData -> MyRewardsCard(item)
                 is PromotionItemViewData -> PromotionCard(item)
             }
