@@ -24,6 +24,7 @@ class ClassListViewDataMapper constructor() {
 
     fun mapToClassViewData(fitnessClass: FitnessClass, confirmationDetails: ClassViewData.ClassConfirmationDetails? = null) : ClassViewData {
         val startTimeInstant = Instant.parse(fitnessClass.startsAt)
+        val endTimeInstant = Instant.parse(fitnessClass.endsAt)
         val isInPast = startTimeInstant < Clock.System.now()
         return ClassViewData(
             classId = fitnessClass.classId,
@@ -40,7 +41,9 @@ class ClassListViewDataMapper constructor() {
             bookingStatus = fitnessClass.toBookingStatus(),
             startsWithin12Hours = startTimeInstant.minus(12.hours) < Clock.System.now() && !isInPast,
             confirmationDetails = confirmationDetails,
-            isInPast = isInPast
+            isInPast = isInPast,
+            startTimeEpoch = startTimeInstant.toEpochMilliseconds(),
+            endTimeEpoch = endTimeInstant.toEpochMilliseconds()
         )
     }
 

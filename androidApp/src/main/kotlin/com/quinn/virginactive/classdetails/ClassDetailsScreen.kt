@@ -71,7 +71,7 @@ internal fun ClassDetailsScreen(
         retry = { viewModel.loadClassDetails(id) },
         bookClass = { viewModel.bookClass(id) },
         cancelClass = { viewModel.cancelClass(id) },
-        setReminder = { }
+        setReminder = viewModel::setLocalReminder
     )
 
     if (bookingState is ClassDetailsViewModel.State.Error) {
@@ -88,7 +88,7 @@ private fun ClassDetailsContent(
     retry: () -> Unit,
     bookClass: (String) -> Unit,
     cancelClass: (String) -> Unit,
-    setReminder: () -> Unit
+    setReminder: (ClassViewData) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -142,7 +142,7 @@ private fun LoadedClassDetailsContent(
     viewData: ClassViewData,
     bookClass: () -> Unit,
     cancelClass: () -> Unit,
-    setReminder: () -> Unit
+    setReminder: (ClassViewData) -> Unit
 ) {
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -204,7 +204,7 @@ private fun LoadedClassDetailsContent(
                     item = viewData,
                     onBook = bookClass,
                     onCancelBooking = cancelClass,
-                    onSetReminder = setReminder
+                    onSetReminder = { setReminder(viewData) }
                 )
             }
 

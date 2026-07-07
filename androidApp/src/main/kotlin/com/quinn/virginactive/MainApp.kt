@@ -1,6 +1,8 @@
 package com.quinn.virginactive
 
 import android.app.Application
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import androidx.core.content.edit
 import com.quinn.virginactive.di.androidModule
 import com.quinn.virginactive.di.initKoin
@@ -26,9 +28,29 @@ class MainApp : Application() {
             }
         }
 
+        val androidLocalClassReminder = object : LocalClassReminder {
+            override fun setLocalReminder(
+                title: String,
+                location: String,
+                startTime: Long,
+                endTime: Long
+            ) {
+                val intent = Intent(Intent.ACTION_INSERT).addFlags(FLAG_ACTIVITY_NEW_TASK).apply {
+                    data = android.provider.CalendarContract.Events.CONTENT_URI
+                    putExtra(android.provider.CalendarContract.Events.TITLE, title)
+                    putExtra(android.provider.CalendarContract.Events.EVENT_LOCATION, location)
+                    putExtra(android.provider.CalendarContract.EXTRA_EVENT_BEGIN_TIME, startTime)
+                    putExtra(android.provider.CalendarContract.EXTRA_EVENT_END_TIME, endTime)
+                }
+                if (intent.resolveActivity(packageManager) != null) {
+                    startActivity(intent)
+                }
+            }
+        }
+
         initKoin(
             platformDeviceIO = androidPlatformDeviceIO,
-            platformModule = androidModule()
+            platformModule = androidModule(androidLocalClassReminder)
         )
     }
 }

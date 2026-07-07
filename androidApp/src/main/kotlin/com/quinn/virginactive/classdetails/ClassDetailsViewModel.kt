@@ -2,6 +2,7 @@ package com.quinn.virginactive.classdetails
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quinn.virginactive.LocalClassReminder
 import com.quinn.virginactive.timetable.ClassViewData
 import com.quinn.virginactive.timetable.usecases.AlreadyBookedException
 import com.quinn.virginactive.timetable.usecases.BookClassUseCase
@@ -16,7 +17,8 @@ import kotlinx.coroutines.launch
 internal class ClassDetailsViewModel constructor(
     val getClassViewDataUseCase: GetClassViewDataUseCase,
     val bookClassUseCase: BookClassUseCase,
-    val cancelBookingUseCase: CancelBookingUseCase
+    val cancelBookingUseCase: CancelBookingUseCase,
+    val localClassReminder: LocalClassReminder
 ) : ViewModel() {
 
     sealed class State {
@@ -92,6 +94,14 @@ internal class ClassDetailsViewModel constructor(
                 _bookingState.value = BookingState.Error("Something went wrong, please try again")
             }
         }
+    }
 
+    fun setLocalReminder(viewData: ClassViewData) {
+        localClassReminder.setLocalReminder(
+            title = viewData.title,
+            location = viewData.trainer,
+            startTime = viewData.startTimeEpoch,
+            endTime = viewData.endTimeEpoch
+        )
     }
 }

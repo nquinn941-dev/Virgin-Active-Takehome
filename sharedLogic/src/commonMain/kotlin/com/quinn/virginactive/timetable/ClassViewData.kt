@@ -17,7 +17,9 @@ data class ClassViewData(
     val bookingStatus: BookingStatus,
     val startsWithin12Hours: Boolean,
     val confirmationDetails: ClassConfirmationDetails?,
-    val isInPast: Boolean
+    val isInPast: Boolean,
+    val startTimeEpoch: Long,
+    val endTimeEpoch: Long
 ) {
     data class ClassConfirmationDetails(
         val bookingId: String,
