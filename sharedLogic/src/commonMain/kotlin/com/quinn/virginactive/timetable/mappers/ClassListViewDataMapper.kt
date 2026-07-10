@@ -6,6 +6,16 @@ import com.quinn.virginactive.timetable.ClassViewData
 import com.quinn.virginactive.timetable.networking.responses.ClassesResponse
 import com.quinn.virginactive.timetable.networking.responses.FitnessClass
 import com.quinn.virginactive.timetable.networking.responses.UserBookingStatus
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.format.DayOfWeekNames
+import kotlinx.datetime.format.MonthNames
+import kotlinx.datetime.format.Padding
+import kotlinx.datetime.format.char
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
@@ -15,10 +25,10 @@ class ClassListViewDataMapper constructor() {
     fun mapToClassListViewData(classListResponse: ClassesResponse) : ClassListViewData {
         return ClassListViewData(
             clubId = classListResponse.clubId,
-            classesPerDay = classListResponse.days.associate { day ->
-                day.date to day.classes.map { mapToClassViewData(it) }
-
-            }
+            classesPerDay = classListResponse.days.map { day ->
+                val date = LocalDate.parse(day.date)
+                date.dayOfWeek.name.lowercase().replaceFirstChar { it.titlecase() } to day.classes.map { mapToClassViewData(it) }
+            }.toMap()
         )
     }
 
@@ -26,16 +36,37 @@ class ClassListViewDataMapper constructor() {
         val startTimeInstant = Instant.parse(fitnessClass.startsAt)
         val endTimeInstant = Instant.parse(fitnessClass.endsAt)
         val isInPast = startTimeInstant < Clock.System.now()
+        val dateFormatter = LocalDateTime.Format {
+            dayOfWeek(DayOfWeekNames.ENGLISH_ABBREVIATED)
+            char(' ')
+            day(padding = Padding.NONE)
+            char(' ')
+            monthName(MonthNames.ENGLISH_FULL)
+        }
+        val startDate = startTimeInstant.toLocalDateTime(TimeZone.UTC).format(dateFormatter)
+
+        val startLocalDateTime = DateTimeComponents.Format {
+            dateTimeComponents(DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)
+        }.parse(fitnessClass.startsAt).toLocalDateTime()
+
+        val endLocalDateTime = DateTimeComponents.Format {
+            dateTimeComponents(DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)
+        }.parse(fitnessClass.endsAt).toLocalDateTime()
+
+        val timeFormatter = LocalDateTime.Format {
+            hour(Padding.ZERO)
+            char(':')
+            minute(Padding.ZERO)
+            char(' ')
+        }
         return ClassViewData(
             classId = fitnessClass.classId,
             title = fitnessClass.title,
             trainer = fitnessClass.trainer,
             classDisplayType = fitnessClass.type.name.replace("_", " ").lowercase()
                 .replaceFirstChar { it.titlecase() },
-            date = fitnessClass.startsAt.substringBefore('T'),
-            time = "${
-                fitnessClass.startsAt.substringAfter("T").substringBefore("+")
-            } - ${fitnessClass.endsAt.substringAfter("T").substringBefore("+")}",
+            date = startDate,
+            time = "${timeFormatter.format(startLocalDateTime)} - ${timeFormatter.format(endLocalDateTime)}",
             availability = "${fitnessClass.available} of ${fitnessClass.spots} spots available",
             waitlistCount = fitnessClass.waitlistCount,
             bookingStatus = fitnessClass.toBookingStatus(),

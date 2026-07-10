@@ -96,14 +96,12 @@ private fun TimetableContent(
 
 @Composable
 fun LoadedClassListContent(viewData: ClassListViewData, viewDetails: (String) -> Unit) {
-    val sortedDays = viewData.classesPerDay.entries.sortedBy { it.key }
-
     LazyColumn(
         modifier = Modifier
             .fillMaxSize(),
         contentPadding = PaddingValues(vertical = 12.dp)
     ) {
-        sortedDays.forEach { (day, classes) ->
+        viewData.classesPerDay.entries.forEach { (day, classes) ->
             item(key = "header_$day") {
                 DayHeader(day = day)
             }

@@ -18,6 +18,15 @@ import com.quinn.virginactive.home.responses.MyClubBlock
 import com.quinn.virginactive.home.responses.MyGoalsBlock
 import com.quinn.virginactive.home.responses.MyRewardsBlock
 import com.quinn.virginactive.home.responses.PromotionBlock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.format.DayOfWeekNames
+import kotlinx.datetime.format.Padding
+import kotlinx.datetime.format.char
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Instant
 
 class HomeViewDataMapper internal constructor() {
 
@@ -107,8 +116,17 @@ class HomeViewDataMapper internal constructor() {
 }
 
 private fun String.convertToReadableDate() : String {
-    val date = this.split("T").first()
-    val time = this.substringAfter("T").substringBeforeLast("+")
-    val (_, month, day) = date.split("-")
-    return "$day/$month - $time"
+    val localDateTime = DateTimeComponents.Format {
+        dateTimeComponents(DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET)
+    }.parse(this).toLocalDateTime()
+    val format = LocalDateTime.Format {
+        dayOfWeek(DayOfWeekNames.ENGLISH_FULL)
+        char(' ')
+        char('-')
+        char(' ')
+        hour(Padding.ZERO)
+        char(':')
+        minute(Padding.ZERO)
+    }
+    return localDateTime.format(format)
 }
