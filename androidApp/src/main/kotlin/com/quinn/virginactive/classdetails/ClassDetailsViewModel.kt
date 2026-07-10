@@ -45,12 +45,11 @@ internal class ClassDetailsViewModel constructor(
         _state.value = State.Loading
         viewModelScope.launch {
             try {
-                getClassViewDataUseCase.getClassViewData(classId).collectLatest {
-                    if (it != null) {
-                        _state.value = State.Loaded(it)
-                    } else {
-                        _state.value = State.ClassNotFound(classId)
-                    }
+                val viewData = getClassViewDataUseCase.getClassViewData(classId)
+                if (viewData != null) {
+                    _state.value = State.Loaded(viewData)
+                } else {
+                    _state.value = State.ClassNotFound(classId)
                 }
             } catch (ex: Exception) {
                 ex.printStackTrace()
@@ -87,7 +86,8 @@ internal class ClassDetailsViewModel constructor(
         _state.value = State.Loading
         viewModelScope.launch {
             try {
-                cancelBookingUseCase.cancelBooking(classId)
+                val viewData = cancelBookingUseCase.cancelBooking(classId)
+                _state.value = State.Loaded(viewData)
             } catch (ex: Exception) {
                 ex.printStackTrace()
                 _state.value = existingLoadedState

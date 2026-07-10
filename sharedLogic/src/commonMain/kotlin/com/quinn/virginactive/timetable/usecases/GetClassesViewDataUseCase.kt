@@ -9,8 +9,5 @@ class GetClassesViewDataUseCase internal constructor(
     private val classRepository: ClassRepository
 ) {
 
-    suspend fun getClassesViewData(clubId: String) : StateFlow<ClassListViewData> {
-        classRepository.refreshClasses(clubId)
-        return classRepository.classes
-    }
+    suspend fun getClassesViewData(clubId: String) = classRepository.getClasses(clubId = clubId, forceRefresh = false)
 }

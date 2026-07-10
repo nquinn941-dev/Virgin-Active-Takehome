@@ -25,13 +25,13 @@ internal class TimetableViewModel(
     val state : StateFlow<State> = _state
 
     fun loadTimetable() {
+        _state.value = State.Loading
         val user = (userManager.getUserStateSnapshot() as? UserState.LoggedIn)?.user
         user?.let {
             try {
                 viewModelScope.launch {
-                    getClassesViewDataUseCase.getClassesViewData(it.clubInfo.id).collectLatest {
-                        _state.value = State.Loaded(it)
-                    }
+                    val viewData = getClassesViewDataUseCase.getClassesViewData(clubId = it.clubInfo.id)
+                    _state.value = State.Loaded(viewData)
                 }
             } catch (ex: Exception) {
                 ex.printStackTrace()

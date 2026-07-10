@@ -6,7 +6,7 @@ class CancelBookingUseCase internal constructor(
     private val classRepository: ClassRepository
 ) {
 
-    suspend fun cancelBooking(classId: String) {
+    suspend fun cancelBooking(classId: String) =
         classRepository.cancelClassBooking(classId)
-    }
+
 }

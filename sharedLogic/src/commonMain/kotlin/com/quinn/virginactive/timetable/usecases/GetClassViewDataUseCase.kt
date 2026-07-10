@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.Flow
 class GetClassViewDataUseCase internal constructor(
     private val classRepository: ClassRepository
 ) {
-    suspend fun getClassViewData(classId: String): Flow<ClassViewData?> {
-        return classRepository.getClass(classId)
-    }
+    suspend fun getClassViewData(classId: String): ClassViewData? =
+        classRepository.getClass(classId)
 }

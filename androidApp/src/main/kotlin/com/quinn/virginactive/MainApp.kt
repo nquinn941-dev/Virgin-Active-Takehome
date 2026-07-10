@@ -15,7 +15,6 @@ class MainApp : Application() {
         initKoin(
             configuration = KoinConfiguration {
                 androidContext(this@MainApp)
-                Log.i("KOIN", "Context set")
             },
             viewModelModule = androidModule()
         )
