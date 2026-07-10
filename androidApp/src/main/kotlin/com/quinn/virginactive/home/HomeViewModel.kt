@@ -21,7 +21,7 @@ internal class HomeViewModel (
     val state : StateFlow<State> = _state
 
     fun load() {
-        _state.value = State.Loading
+        if (_state.value !is State.Loaded) _state.value = State.Loading
         viewModelScope.launch {
             _state.value = try {
                 val homeViewData = getHomeViewDataUseCase.getHomeViewData()

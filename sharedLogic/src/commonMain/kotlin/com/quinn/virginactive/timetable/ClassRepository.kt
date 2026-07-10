@@ -40,7 +40,7 @@ internal class ClassRepository constructor(
 
     suspend fun getClasses(clubId: String, forceRefresh: Boolean) : ClassListViewData {
         val cacheIsValid =
-            !forceRefresh && lastFetchedAt != null && lastFetchedAt!!.plus(cacheDuration) < Clock.System.now()
+            !forceRefresh && lastFetchedAt != null && lastFetchedAt!!.plus(cacheDuration) > Clock.System.now()
         if (cacheIsValid) return _classes.value
         val response = classApi.getTimetable(clubId, date = null)
         _classes.value =  classListViewDataMapper.mapToClassListViewData(response)

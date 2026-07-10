@@ -60,8 +60,8 @@ private fun HomeContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.White)
-            .safeContentPadding(),
+            .background(color = Color.White),
+//            .safeContentPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
