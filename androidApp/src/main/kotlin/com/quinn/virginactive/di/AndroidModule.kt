@@ -9,11 +9,7 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-fun androidModule(localClassReminder: LocalClassReminder) = module {
-
-    single {
-        localClassReminder
-    }.bind()
+fun androidModule() = module {
 
     viewModel {
         LoginViewModel(

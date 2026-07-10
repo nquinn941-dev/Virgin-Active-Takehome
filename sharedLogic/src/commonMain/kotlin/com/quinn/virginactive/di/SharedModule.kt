@@ -39,7 +39,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 
-fun sharedModule(platformDeviceIO: PlatformDeviceIO) = module {
+fun sharedModule() = module {
 
     single {
         Json {
@@ -77,7 +77,7 @@ fun sharedModule(platformDeviceIO: PlatformDeviceIO) = module {
 
     single {
         TokenStore(
-            platformDeviceIO = platformDeviceIO,
+            platformDeviceIO = get(),
             authApi = get()
         )
     }.bind<TokenStore>()

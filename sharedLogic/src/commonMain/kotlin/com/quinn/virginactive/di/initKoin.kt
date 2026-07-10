@@ -1,13 +1,15 @@
 package com.quinn.virginactive.di
 
-import com.quinn.virginactive.PlatformDeviceIO
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.KoinConfiguration
+import org.koin.dsl.includes
 
-fun initKoin(configuration: KoinConfiguration? = null, platformDeviceIO: PlatformDeviceIO, platformModule: Module) {
+fun initKoin(configuration: KoinConfiguration? = null, viewModelModule: Module) {
     startKoin {
-        configuration?.invoke()
-        modules(sharedModule(platformDeviceIO), platformModule)
+        configuration?.let {
+            includes(it)
+        }
+        modules(platformModule(), sharedModule(), viewModelModule)
     }
 }
