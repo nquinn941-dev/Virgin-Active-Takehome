@@ -35,11 +35,11 @@ class UserManager internal constructor(
     private val profileApi: ProfileApi
 ): UserRepo {
 
+    private val userState: MutableStateFlow<UserState> = MutableStateFlow(UserState.Loading)
+
     init {
         getProfileOnLogin()
     }
-
-    private val userState: MutableStateFlow<UserState> = MutableStateFlow(UserState.Loading)
 
     override suspend fun login(request: LoginRequest) {
         userState.value = try {
