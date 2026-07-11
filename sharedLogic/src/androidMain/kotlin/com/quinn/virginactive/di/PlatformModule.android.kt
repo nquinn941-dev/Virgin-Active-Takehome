@@ -7,10 +7,11 @@ import android.provider.CalendarContract
 import androidx.core.content.edit
 import com.quinn.virginactive.LocalClassReminder
 import com.quinn.virginactive.PlatformDeviceIO
+import com.quinn.virginactive.PlatformDirectionProvider
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import kotlin.math.sin
+import androidx.core.net.toUri
 
 class AndroidLocalClassReminder(
     private val context: Context
@@ -53,6 +54,18 @@ class AndroidDeviceIO(
 
 }
 
+class AndroidDirectionProvider(
+    private val context: Context
+) : PlatformDirectionProvider {
+
+    override fun getDirections(address: String) {
+        val intentURI = "geo:0,0?q=$address".toUri()
+        val intent = Intent(Intent.ACTION_VIEW, intentURI).addFlags(FLAG_ACTIVITY_NEW_TASK)
+        intent.setPackage("com.google.android.apps.maps")
+        context.startActivity(intent)
+    }
+}
+
 actual fun platformModule() = module {
 
     single {
@@ -66,4 +79,10 @@ actual fun platformModule() = module {
             context = androidContext()
         )
     }.bind<LocalClassReminder>()
+
+    single {
+        AndroidDirectionProvider(
+            context = androidContext()
+        )
+    }.bind<PlatformDirectionProvider>()
 }

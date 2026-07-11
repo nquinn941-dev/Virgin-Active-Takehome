@@ -114,11 +114,11 @@ fun HeroCard(item: HeroItemViewData) {
 }
 
 @Composable
-fun MyClubCard(item: MyClubItemViewData) {
-
+fun MyClubCard(item: MyClubItemViewData, getDirections: (String) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { getDirections(item.name + item.addressLine) }
             .padding(horizontal = 20.dp, vertical = 12.dp),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = HomeColors.Graphite800),

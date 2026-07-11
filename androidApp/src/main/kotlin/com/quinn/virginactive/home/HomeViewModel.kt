@@ -3,12 +3,14 @@ package com.quinn.virginactive.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quinn.virginactive.home.usecases.GetHomeViewDataUseCase
+import com.quinn.virginactive.home.usecases.GetDirectionsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 internal class HomeViewModel (
-    private val getHomeViewDataUseCase: GetHomeViewDataUseCase
+    private val getHomeViewDataUseCase: GetHomeViewDataUseCase,
+    private val getDirectionsUseCase: GetDirectionsUseCase
 ): ViewModel() {
 
     sealed class State {
@@ -31,5 +33,9 @@ internal class HomeViewModel (
                 State.Error(ex.message ?: "Something went wrong try again later")
             }
         }
+    }
+
+    fun openMap(address: String) {
+        getDirectionsUseCase.getDirections(address)
     }
 }

@@ -46,7 +46,8 @@ internal fun HomeScreen(
         state = state,
         retry = viewModel::load,
         viewTimetable = viewTimetable,
-        viewClassDetails = viewClassDetails
+        viewClassDetails = viewClassDetails,
+        getDirections = viewModel::openMap
     )
 }
 
@@ -55,7 +56,8 @@ private fun HomeContent(
     state: HomeViewModel.State,
     retry: () -> Unit,
     viewTimetable: () -> Unit,
-    viewClassDetails : (String) -> Unit
+    viewClassDetails : (String) -> Unit,
+    getDirections: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -84,7 +86,8 @@ private fun HomeContent(
                 LoadedHomeContent(
                     viewData =  state.homeViewData,
                     viewTimetable = viewTimetable,
-                    viewClassDetails = viewClassDetails
+                    viewClassDetails = viewClassDetails,
+                    getDirections = getDirections
                 )
             }
         }
@@ -95,7 +98,8 @@ private fun HomeContent(
 private fun LoadedHomeContent(
     viewData: HomeViewData,
     viewTimetable: () -> Unit,
-    viewClassDetails : (String) -> Unit
+    viewClassDetails : (String) -> Unit,
+    getDirections: (String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -105,7 +109,7 @@ private fun LoadedHomeContent(
             when (item) {
                 is GreetingItemViewData -> GreetingCard(item)
                 is HeroItemViewData -> HeroCard(item)
-                is MyClubItemViewData -> MyClubCard(item)
+                is MyClubItemViewData -> MyClubCard(item, getDirections )
                 is ClassCarouselItemViewData -> ClassCarouselCard(
                     item = item,
                     viewTimetable = viewTimetable,

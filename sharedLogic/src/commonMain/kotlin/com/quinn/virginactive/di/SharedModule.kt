@@ -1,9 +1,7 @@
 package com.quinn.virginactive.di
 
-import com.quinn.virginactive.PlatformDeviceIO
 import com.quinn.virginactive.TokenStore
 import com.quinn.virginactive.UserManager
-import com.quinn.virginactive.UserRepo
 import com.quinn.virginactive.auth.AuthApi
 import com.quinn.virginactive.auth.KtorAuthApi
 import com.quinn.virginactive.auth.usecases.LoginUseCase
@@ -11,6 +9,7 @@ import com.quinn.virginactive.home.HomeApi
 import com.quinn.virginactive.home.KtorHomeApi
 import com.quinn.virginactive.home.mappers.HomeViewDataMapper
 import com.quinn.virginactive.home.usecases.GetHomeViewDataUseCase
+import com.quinn.virginactive.home.usecases.GetDirectionsUseCase
 import com.quinn.virginactive.timetable.ClassRepository
 import com.quinn.virginactive.timetable.mappers.ClassListViewDataMapper
 import com.quinn.virginactive.timetable.networking.ClassApi
@@ -194,6 +193,12 @@ fun sharedModule() = module {
     factory {
         CancelBookingUseCase(
             classRepository = get()
+        )
+    }
+
+    factory {
+        GetDirectionsUseCase(
+            platformDirectionProvider = get()
         )
     }
 
