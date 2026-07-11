@@ -40,11 +40,12 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 internal fun ClassDetailsScreen(
     id: String,
+    showSnackbar: (String) -> Unit
 ) {
 
     val viewModel = koinViewModel<ClassDetailsViewModel>()
     val state by viewModel.state.collectAsState()
-    val bookingState by viewModel.state.collectAsState()
+    val bookingState by viewModel.bookingState.collectAsState()
 
     LaunchedEffect(id) {
         viewModel.loadClassDetails(classId = id)
@@ -58,9 +59,9 @@ internal fun ClassDetailsScreen(
         setReminder = viewModel::setLocalReminder
     )
 
-    if (bookingState is ClassDetailsViewModel.State.Error) {
-        val error = (bookingState as ClassDetailsViewModel.State.Error).message
-        //TODO Show snackbar with the error
+    if (bookingState is ClassDetailsViewModel.BookingState.Error) {
+        val error = (bookingState as ClassDetailsViewModel.BookingState.Error).message
+        showSnackbar(error)
     }
 
 
