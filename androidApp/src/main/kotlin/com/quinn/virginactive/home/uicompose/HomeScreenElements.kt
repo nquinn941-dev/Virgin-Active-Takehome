@@ -3,6 +3,7 @@ package com.quinn.virginactive.home.uicompose
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AssistChip
@@ -35,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,7 +56,8 @@ fun GreetingCard(item: GreetingItemViewData) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 18.dp)
+            .padding(horizontal = 20.dp, vertical = 18.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = item.title,
@@ -72,7 +77,8 @@ fun HeroCard(item: HeroItemViewData) {
             .padding(horizontal = 20.dp),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
         Box(
             modifier = Modifier
@@ -151,7 +157,9 @@ fun MyClubCard(item: MyClubItemViewData, getDirections: (String) -> Unit) {
 @Composable
 fun ClassCarouselCard(item: ClassCarouselItemViewData, viewTimetable: () -> Unit, viewClassDetails : (String) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Row(modifier = Modifier.fillMaxWidth().clickable { viewTimetable() }, verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .clickable { viewTimetable() }, verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = item.title,
                 fontSize = 20.sp,
@@ -183,7 +191,9 @@ fun ClassCarouselCard(item: ClassCarouselItemViewData, viewTimetable: () -> Unit
 @Composable
 fun ClassItemCard(item: CarouselItemViewData, viewClassDetails : (String) -> Unit) {
     Card(
-        modifier = Modifier.width(190.dp).clickable { viewClassDetails(item.id) },
+        modifier = Modifier
+            .width(190.dp)
+            .clickable { viewClassDetails(item.id) },
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -274,13 +284,16 @@ fun MyRewardsCard(item: MyRewardsItemViewData) {
             modifier = Modifier.padding(horizontal = 20.dp)
         )
 
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 20.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Max)
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(item.items) { card ->
-                RewardItemCard(card)
+            item.items.forEach {
+                RewardItemCard(it)
             }
         }
     }
@@ -289,7 +302,7 @@ fun MyRewardsCard(item: MyRewardsItemViewData) {
 @Composable
 fun RewardItemCard(item: CarouselItemViewData) {
     Card(
-        modifier = Modifier.width(210.dp),
+        modifier = Modifier.width(210.dp).fillMaxHeight(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
