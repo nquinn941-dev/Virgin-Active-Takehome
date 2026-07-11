@@ -139,6 +139,19 @@ fun MyClubCard(item: MyClubItemViewData, getDirections: (String) -> Unit) {
             Text(text = item.openingHoursToday, fontSize = 14.sp, color = HomeColors.BoneDim)
             Spacer(Modifier.height(4.dp))
             Text(text = item.phoneNumber, fontSize = 14.sp, color = HomeColors.BoneDim)
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text("Get Directions", fontSize = 14.sp, color = HomeColors.Lime)
+                Spacer(modifier = Modifier.weight(1f))
+                Icon(
+                    painterResource(R.drawable.ic_right_arrow),
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = HomeColors.Lime
+
+                )
+            }
         }
     }
 }
