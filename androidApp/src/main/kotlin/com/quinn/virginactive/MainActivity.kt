@@ -6,6 +6,7 @@ import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,6 +25,7 @@ import com.quinn.virginactive.classdetails.ClassDetailsScreen
 import com.quinn.virginactive.home.HomeScreen
 import com.quinn.virginactive.login.LoginScreen
 import com.quinn.virginactive.timetable.TimetableScreen
+import com.quinn.virginactive.uicompose.VirginActiveTheme
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -42,61 +44,64 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-
         setContent {
-            val navController = rememberNavController()
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val titleState = rememberSaveable { mutableStateOf("") }
-            val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+            VirginActiveTheme(
+                useSystemTheme = true
+            ) {
+                val navController = rememberNavController()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val titleState = rememberSaveable { mutableStateOf("") }
+                val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
-            Scaffold(
-                topBar = {
-                    if (navBackStackEntry?.destination?.id != navController.graph.startDestinationId) {
-                        NavTopBar(
-                            title = titleState.value,
-                            showNavigation = navBackStackEntry?.destination?.let { !it.hasRoute(Home::class) }
-                                ?: false,
-                            navigateUp = { backPressedDispatcher?.onBackPressed() }
-                        )
+                Scaffold(
+                    topBar = {
+                        if (navBackStackEntry?.destination?.id != navController.graph.startDestinationId) {
+                            NavTopBar(
+                                title = titleState.value,
+                                showNavigation = navBackStackEntry?.destination?.let { !it.hasRoute(Home::class) }
+                                    ?: false,
+                                navigateUp = { backPressedDispatcher?.onBackPressed() }
+                            )
+                        }
+
                     }
+                )
+                { innerPadding ->
+                    NavHost(
+                        navController = navController,
+                        startDestination = Login,
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        composable<Login> {
+                            titleState.value = "Login"
+                            LoginScreen(
+                                successfulLogin = { navController.navigate(Home) }
+                            )
+                        }
 
-                }
-            ) { innerPadding ->
-                NavHost(
-                    navController = navController,
-                    startDestination = Login,
-                    modifier = Modifier.padding(innerPadding)
-                ) {
-                    composable<Login> {
-                        titleState.value = "Login"
-                        LoginScreen(
-                            successfulLogin = { navController.navigate(Home) }
-                        )
-                    }
+                        composable<Home> {
+                            titleState.value = "Home"
+                            HomeScreen(
+                                viewTimetable = { navController.navigate(Timetable) },
+                                viewClassDetails = { navController.navigate(ClassDetails(it)) }
+                            )
+                        }
 
-                    composable<Home> {
-                        titleState.value = "Home"
-                        HomeScreen(
-                            viewTimetable = { navController.navigate(Timetable) },
-                            viewClassDetails = { navController.navigate(ClassDetails(it)) }
-                        )
-                    }
+                        composable<Timetable> {
+                            titleState.value = "Timetable"
+                            TimetableScreen(
+                                viewDetails = { id -> navController.navigate(ClassDetails(id)) }
+                            )
+                        }
 
-                    composable<Timetable> {
-                        titleState.value = "Timetable"
-                        TimetableScreen(
-                            viewDetails = { id -> navController.navigate(ClassDetails(id)) }
-                        )
-                    }
-
-                    composable<ClassDetails> {
-                        titleState.value = "Class Details"
-                        val id = it.toRoute<ClassDetails>().id
-                        ClassDetailsScreen(id = id)
+                        composable<ClassDetails> {
+                            titleState.value = "Class Details"
+                            val id = it.toRoute<ClassDetails>().id
+                            ClassDetailsScreen(id = id)
+                        }
                     }
                 }
             }
-
         }
     }
 }

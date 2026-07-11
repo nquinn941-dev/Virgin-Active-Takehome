@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.quinn.virginactive.uicompose.LocalExtendedColors
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -138,6 +139,7 @@ fun ClassCard(viewData: ClassViewData, modifier: Modifier = Modifier, viewDetail
     Card(
         modifier = modifier.fillMaxWidth().clickable { viewDetails(viewData.classId) },
         shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -150,6 +152,7 @@ fun ClassCard(viewData: ClassViewData, modifier: Modifier = Modifier, viewDetail
                 Text(
                     text = viewData.title,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
@@ -187,11 +190,21 @@ fun ClassCard(viewData: ClassViewData, modifier: Modifier = Modifier, viewDetail
 
 @Composable
 fun StatusBadge(status: ClassViewData.BookingStatus) {
+    // Consistent status semantics used across the app:
+    // success (open/booked) · tertiary (waitlisted, cautionary) · error (full)
+    val extended = LocalExtendedColors.current
     val (label, background, contentColor) = when (status) {
-        ClassViewData.BookingStatus.OPEN -> Triple("Open", Color(0xFF2E7D32), Color.White)
-        ClassViewData.BookingStatus.FULL -> Triple("Full", Color(0xFFB71C1C), Color.White)
-        ClassViewData.BookingStatus.WAITLISTED -> Triple("Waitlist", Color(0xFFE65100), Color.White)
-        ClassViewData.BookingStatus.BOOKED -> Triple("Booked", Color(0xFF1565C0), Color.White)
+        ClassViewData.BookingStatus.OPEN ->
+            Triple("Open", extended.successContainer, extended.onSuccessContainer)
+
+        ClassViewData.BookingStatus.BOOKED ->
+            Triple("Booked", extended.successContainer, extended.onSuccessContainer)
+
+        ClassViewData.BookingStatus.WAITLISTED ->
+            Triple("Waitlist", MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.onTertiaryContainer)
+
+        ClassViewData.BookingStatus.FULL ->
+            Triple("Full", MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer)
     }
 
     Surface(
@@ -221,6 +234,7 @@ fun MetaItem(label: String, value: String) {
         Text(
             text = value,
             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+            color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )

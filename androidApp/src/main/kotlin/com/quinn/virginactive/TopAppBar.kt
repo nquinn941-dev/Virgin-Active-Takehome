@@ -1,6 +1,7 @@
 package com.quinn.virginactive
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,16 +26,15 @@ fun NavTopBar(
 
     TopAppBar(
         title = {
-            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Box(modifier = Modifier.fillMaxWidth()) {
                 if (showNavigation) {
                     Icon(
                         painter = painterResource(R.drawable.ic_right_arrow),
-                        modifier = Modifier.size(20.dp).rotate(180f).clickable { navigateUp() },
+                        modifier = Modifier.align(Alignment.CenterStart).size(20.dp).rotate(180f).clickable { navigateUp() },
                         contentDescription = "back"
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
                 }
-                Text(title)
+                Text(title, modifier = Modifier.align(Alignment.Center))
             }
 
 

@@ -34,24 +34,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.quinn.virginactive.timetable.ClassViewData
+import com.quinn.virginactive.uicompose.LocalExtendedColors
 import org.koin.compose.viewmodel.koinViewModel
-
-object ClassDetailColors {
-    val Background = Color(0xFFFFFFFF)
-    val SurfaceMuted = Color(0xFFF2F2F4)
-    val TextPrimary = Color(0xFF15171A)
-    val TextSecondary = Color(0xFF7A7D85)
-    val PillRed = Color(0xFFE3473F)
-    val PillRedText = Color(0xFFFFFFFF)
-    val Mint = Color(0xFFCFF6E4)
-    val MintText = Color(0xFF0E7A4F)
-    val Amber = Color(0xFFFCEFC7)
-    val AmberBorder = Color(0xFFE8B23A)
-    val AmberText = Color(0xFF8A6510)
-    val Coral = Color(0xFFFCE3E1)
-    val CoralText = Color(0xFFB23A2E)
-    val Danger = Color(0xFFE3473F)
-}
 
 @Composable
 internal fun ClassDetailsScreen(
@@ -101,7 +85,8 @@ private fun ClassDetailsContent(
         when (state) {
             is ClassDetailsViewModel.State.ClassNotFound -> {
                 Text(
-                    text = "No class found for id ${state.id}"
+                    text = "No class found for id ${state.id}",
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = retry) {
@@ -110,7 +95,7 @@ private fun ClassDetailsContent(
             }
 
             is ClassDetailsViewModel.State.Error -> {
-                Text(state.message)
+                Text(state.message, color = MaterialTheme.colorScheme.onBackground)
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = retry) {
                     Text("Retry")
@@ -161,7 +146,7 @@ private fun LoadedClassDetailsContent(
                 text = viewData.title,
                 fontSize = 26.sp,
                 fontWeight = FontWeight.Bold,
-                color = ClassDetailColors.TextPrimary
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(Modifier.height(4.dp))
@@ -169,7 +154,7 @@ private fun LoadedClassDetailsContent(
             Text(
                 text = "with ${viewData.trainer}",
                 fontSize = 14.sp,
-                color = ClassDetailColors.TextSecondary
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(Modifier.height(20.dp))
@@ -218,7 +203,7 @@ private fun TypePill(label: String) {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(6.dp))
-            .background(ClassDetailColors.PillRed)
+            .background(MaterialTheme.colorScheme.primary)
             .padding(horizontal = 10.dp, vertical = 5.dp)
     ) {
         Text(
@@ -226,7 +211,7 @@ private fun TypePill(label: String) {
             fontSize = 11.sp,
             fontWeight = FontWeight.Bold,
             letterSpacing = 0.5.sp,
-            color = ClassDetailColors.PillRedText
+            color = MaterialTheme.colorScheme.onPrimary
         )
     }
 }
@@ -238,7 +223,7 @@ private fun DetailCard(item: ClassViewData) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(ClassDetailColors.SurfaceMuted)
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .padding(horizontal = 16.dp, vertical = 4.dp)
     ) {
         DetailRow(label = "Date", value = item.date)
@@ -255,12 +240,12 @@ private fun DetailRow(label: String, value: String) {
             .padding(vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = label, fontSize = 14.sp, color = ClassDetailColors.TextSecondary)
+        Text(text = label, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(
             text = value,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
-            color = ClassDetailColors.TextPrimary
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -268,26 +253,32 @@ private fun DetailRow(label: String, value: String) {
 
 @Composable
 private fun StatusBanner(status: ClassViewData.BookingStatus, waitlistCount: Int) {
+    val extended = LocalExtendedColors.current
+
     val (bg, text, label) = when (status) {
         ClassViewData.BookingStatus.BOOKED ->
             Triple(
-                ClassDetailColors.Mint,
-                ClassDetailColors.MintText,
+                extended.successContainer,
+                extended.onSuccessContainer,
                 "You are booked for this class"
             )
 
         ClassViewData.BookingStatus.WAITLISTED ->
             Triple(
-                ClassDetailColors.Coral,
-                ClassDetailColors.CoralText,
+                MaterialTheme.colorScheme.tertiaryContainer,
+                MaterialTheme.colorScheme.onTertiaryContainer,
                 "You're on the waitlist" + if (waitlistCount > 0) " · position $waitlistCount" else ""
             )
 
         ClassViewData.BookingStatus.FULL ->
-            Triple(ClassDetailColors.Coral, ClassDetailColors.CoralText, "This class is full")
+            Triple(
+                MaterialTheme.colorScheme.errorContainer,
+                MaterialTheme.colorScheme.onErrorContainer,
+                "This class is full"
+            )
 
         ClassViewData.BookingStatus.OPEN ->
-            Triple(ClassDetailColors.Mint, ClassDetailColors.MintText, "Spots are available")
+            Triple(extended.successContainer, extended.onSuccessContainer, "Spots are available")
     }
 
     Box(
@@ -310,7 +301,7 @@ private fun InfoBanner(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(ClassDetailColors.Amber)
+            .background(MaterialTheme.colorScheme.tertiaryContainer)
             .padding(horizontal = 14.dp, vertical = 12.dp)
     ) {
         Box(
@@ -318,13 +309,13 @@ private fun InfoBanner(
                 .padding(top = 4.dp)
                 .size(6.dp)
                 .clip(RoundedCornerShape(50))
-                .background(ClassDetailColors.AmberBorder)
+                .background(MaterialTheme.colorScheme.tertiary)
         )
         Spacer(Modifier.width(10.dp))
         Text(
             text = message,
             fontSize = 13.sp,
-            color = ClassDetailColors.AmberText,
+            color = MaterialTheme.colorScheme.onTertiaryContainer,
             lineHeight = 18.sp
         )
     }
@@ -333,11 +324,13 @@ private fun InfoBanner(
 @Composable
 private fun ConfirmationBlock(details: ClassViewData.ClassConfirmationDetails?) {
     details ?: return
+    val extended = LocalExtendedColors.current
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(ClassDetailColors.Mint)
+            .background(extended.successContainer)
             .padding(vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -351,13 +344,13 @@ private fun ConfirmationBlock(details: ClassViewData.ClassConfirmationDetails?) 
             text = bookingHeader,
             fontSize = 15.sp,
             fontWeight = FontWeight.Bold,
-            color = ClassDetailColors.MintText
+            color = extended.onSuccessContainer
         )
         Spacer(Modifier.height(4.dp))
         Text(
             text = "Booking ID: ${details.bookingId}",
             fontSize = 12.sp,
-            color = ClassDetailColors.MintText.copy(alpha = 0.85f)
+            color = extended.onSuccessContainer.copy(alpha = 0.85f)
         )
     }
 }
@@ -398,12 +391,12 @@ private fun FilledActionButton(label: String, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(ClassDetailColors.PillRed)
+            .background(MaterialTheme.colorScheme.primary)
             .clickable(onClick = onClick)
             .padding(vertical = 16.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = label, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        Text(text = label, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
     }
 }
 
@@ -413,7 +406,7 @@ private fun SecondaryActionButton(label: String, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(ClassDetailColors.SurfaceMuted)
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .clickable(onClick = onClick)
             .padding(vertical = 16.dp),
         contentAlignment = Alignment.Center
@@ -422,7 +415,7 @@ private fun SecondaryActionButton(label: String, onClick: () -> Unit) {
             text = label,
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
-            color = ClassDetailColors.TextPrimary
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -440,7 +433,7 @@ private fun DestructiveTextAction(label: String, onClick: () -> Unit) {
             text = label,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
-            color = ClassDetailColors.Danger
+            color = MaterialTheme.colorScheme.error
         )
     }
 }

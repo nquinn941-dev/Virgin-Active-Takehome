@@ -25,10 +25,11 @@ class ClassListViewDataMapper constructor() {
     fun mapToClassListViewData(classListResponse: ClassesResponse) : ClassListViewData {
         return ClassListViewData(
             clubId = classListResponse.clubId,
-            classesPerDay = classListResponse.days.map { day ->
+            classesPerDay = classListResponse.days.associate { day ->
                 val date = LocalDate.parse(day.date)
-                date.dayOfWeek.name.lowercase().replaceFirstChar { it.titlecase() } to day.classes.map { mapToClassViewData(it) }
-            }.toMap()
+                date.dayOfWeek.name.lowercase()
+                    .replaceFirstChar { it.titlecase() } to day.classes.map { mapToClassViewData(it) }
+            }
         )
     }
 

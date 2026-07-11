@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -46,17 +47,6 @@ import com.quinn.virginactive.home.MyClubItemViewData
 import com.quinn.virginactive.home.MyRewardsItemViewData
 import com.quinn.virginactive.home.PromotionItemViewData
 
-object HomeColors {
-    val Graphite900 = Color(0xFF15171A) // screen background
-    val Graphite800 = Color(0xFF1E2125) // card surface
-    val Graphite700 = Color(0xFF2A2E33) // pills / hairlines
-    val Bone = Color(0xFFF4F2EC)        // primary text
-    val BoneDim = Color(0xFFAFB2B8)     // secondary text
-    val Lime = Color(0xFFD7FF3F)        // signal accent
-    val Coral = Color(0xFFFF6A4D)       // alert / closed state only
-    val Ink = Color(0xFF0E0F11)         // text on lime
-}
-
 @Composable
 fun GreetingCard(item: GreetingItemViewData) {
     Column(
@@ -69,7 +59,7 @@ fun GreetingCard(item: GreetingItemViewData) {
             fontSize = 30.sp,
             fontWeight = FontWeight.Black,
             letterSpacing = (-0.5).sp,
-            color = HomeColors.Graphite800
+            color = MaterialTheme.colorScheme.onBackground
         )
     }
 }
@@ -81,7 +71,7 @@ fun HeroCard(item: HeroItemViewData) {
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = HomeColors.Graphite800),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Box(
@@ -89,7 +79,10 @@ fun HeroCard(item: HeroItemViewData) {
                 .fillMaxWidth()
                 .background(
                     Brush.linearGradient(
-                        colors = listOf(HomeColors.Graphite800, HomeColors.Graphite900)
+                        colors = listOf(
+                            MaterialTheme.colorScheme.surfaceContainer,
+                            MaterialTheme.colorScheme.background
+                        )
                     )
                 )
                 .padding(22.dp)
@@ -100,13 +93,13 @@ fun HeroCard(item: HeroItemViewData) {
                     fontSize = 22.sp,
                     fontWeight = FontWeight.ExtraBold,
                     letterSpacing = (-0.2).sp,
-                    color = HomeColors.Bone
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
                     text = item.subtitle,
                     fontSize = 14.sp,
-                    color = HomeColors.BoneDim
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -121,9 +114,9 @@ fun MyClubCard(item: MyClubItemViewData, getDirections: (String) -> Unit) {
             .clickable { getDirections(item.name + item.addressLine) }
             .padding(horizontal = 20.dp, vertical = 12.dp),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = HomeColors.Graphite800),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, HomeColors.Graphite700)
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
 
@@ -131,25 +124,24 @@ fun MyClubCard(item: MyClubItemViewData, getDirections: (String) -> Unit) {
                 text = item.name,
                 fontSize = 19.sp,
                 fontWeight = FontWeight.Bold,
-                color = HomeColors.Bone
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(Modifier.height(4.dp))
-            Text(text = item.addressLine, fontSize = 14.sp, color = HomeColors.BoneDim)
-            Text(text = item.openingHoursToday, fontSize = 14.sp, color = HomeColors.BoneDim)
+            Text(text = item.addressLine, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = item.openingHoursToday, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(4.dp))
-            Text(text = item.phoneNumber, fontSize = 14.sp, color = HomeColors.BoneDim)
+            Text(text = item.phoneNumber, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             Spacer(modifier = Modifier.height(16.dp))
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text("Get Directions", fontSize = 14.sp, color = HomeColors.Lime)
+                Text("Get Directions", fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
                 Spacer(modifier = Modifier.weight(1f))
                 Icon(
                     painterResource(R.drawable.ic_right_arrow),
                     contentDescription = null,
                     modifier = Modifier.size(16.dp),
-                    tint = HomeColors.Lime
-
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -165,7 +157,7 @@ fun ClassCarouselCard(item: ClassCarouselItemViewData, viewTimetable: () -> Unit
                 fontSize = 20.sp,
                 fontWeight = FontWeight.ExtraBold,
                 letterSpacing = (-0.2).sp,
-                color = HomeColors.Graphite800,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(horizontal = 20.dp)
             )
             Spacer(modifier = Modifier.weight(1f))
@@ -193,7 +185,7 @@ fun ClassItemCard(item: CarouselItemViewData, viewClassDetails : (String) -> Uni
     Card(
         modifier = Modifier.width(190.dp).clickable { viewClassDetails(item.id) },
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = HomeColors.Graphite800),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Box(
@@ -202,7 +194,10 @@ fun ClassItemCard(item: CarouselItemViewData, viewClassDetails : (String) -> Uni
                 .height(90.dp)
                 .background(
                     Brush.linearGradient(
-                        listOf(HomeColors.Graphite700, HomeColors.Graphite800)
+                        listOf(
+                            MaterialTheme.colorScheme.outlineVariant,
+                            MaterialTheme.colorScheme.surfaceContainer
+                        )
                     )
                 )
         ) {
@@ -220,11 +215,11 @@ fun ClassItemCard(item: CarouselItemViewData, viewClassDetails : (String) -> Uni
                     fontSize = 10.sp,
                     fontWeight = FontWeight.SemiBold,
                     letterSpacing = 0.8.sp,
-                    color = HomeColors.Ink,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier
                         .padding(10.dp)
                         .clip(RoundedCornerShape(6.dp))
-                        .background(HomeColors.Lime)
+                        .background(MaterialTheme.colorScheme.primary)
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 )
             }
@@ -235,7 +230,7 @@ fun ClassItemCard(item: CarouselItemViewData, viewClassDetails : (String) -> Uni
                 text = item.title,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = HomeColors.Bone,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -246,7 +241,7 @@ fun ClassItemCard(item: CarouselItemViewData, viewClassDetails : (String) -> Uni
                 Text(
                     text = it,
                     fontSize = 13.sp,
-                    color = HomeColors.BoneDim,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -259,7 +254,7 @@ fun ClassItemCard(item: CarouselItemViewData, viewClassDetails : (String) -> Uni
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 0.3.sp,
-                    color = HomeColors.Lime
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -275,13 +270,14 @@ fun MyRewardsCard(item: MyRewardsItemViewData) {
             fontSize = 20.sp,
             fontWeight = FontWeight.ExtraBold,
             letterSpacing = (-0.2).sp,
-            color = HomeColors.Graphite800,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(horizontal = 20.dp)
         )
 
         LazyRow(
             contentPadding = PaddingValues(horizontal = 20.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             items(item.items) { card ->
                 RewardItemCard(card)
@@ -295,7 +291,7 @@ fun RewardItemCard(item: CarouselItemViewData) {
     Card(
         modifier = Modifier.width(210.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = HomeColors.Graphite800),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
@@ -306,7 +302,7 @@ fun RewardItemCard(item: CarouselItemViewData) {
                 modifier = Modifier
                     .size(38.dp)
                     .clip(CircleShape)
-                    .background(HomeColors.Lime),
+                    .background(MaterialTheme.colorScheme.primary),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -321,7 +317,7 @@ fun RewardItemCard(item: CarouselItemViewData) {
                     text = item.title,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
-                    color = HomeColors.Bone,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -329,7 +325,7 @@ fun RewardItemCard(item: CarouselItemViewData) {
                     Text(
                         text = it,
                         fontSize = 13.sp,
-                        color = HomeColors.BoneDim,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -341,7 +337,7 @@ fun RewardItemCard(item: CarouselItemViewData) {
                         fontSize = 10.sp,
                         fontWeight = FontWeight.SemiBold,
                         letterSpacing = 0.8.sp,
-                        color = HomeColors.Lime
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -356,7 +352,7 @@ fun PromotionCard(item: PromotionItemViewData) {
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 12.dp),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = HomeColors.Lime),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
@@ -365,20 +361,20 @@ fun PromotionCard(item: PromotionItemViewData) {
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 1.2.sp,
-                color = HomeColors.Ink.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
             )
             Spacer(Modifier.height(6.dp))
             Text(
                 text = item.title,
                 fontSize = 19.sp,
                 fontWeight = FontWeight.Bold,
-                color = HomeColors.Ink
+                color = MaterialTheme.colorScheme.onPrimary
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 text = item.subtitle,
                 fontSize = 14.sp,
-                color = HomeColors.Ink.copy(alpha = 0.75f)
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f)
             )
         }
     }

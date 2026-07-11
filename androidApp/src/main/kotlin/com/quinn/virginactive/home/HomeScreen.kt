@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import com.quinn.virginactive.home.uicompose.ClassCarouselCard
 import com.quinn.virginactive.home.uicompose.GreetingCard
 import com.quinn.virginactive.home.uicompose.HeroCard
-import com.quinn.virginactive.home.uicompose.HomeColors.Graphite900
 import com.quinn.virginactive.home.uicompose.MyClubCard
 import com.quinn.virginactive.home.uicompose.MyRewardsCard
 import com.quinn.virginactive.home.uicompose.PromotionCard
