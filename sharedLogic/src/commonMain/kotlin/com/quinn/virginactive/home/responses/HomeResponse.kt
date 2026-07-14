@@ -9,20 +9,20 @@ data class HomeResponse(
     val blocks: List<HomeBlock>
 )
 
-@Serializable
+@Serializable(with = HomeBlockSerializer::class)
 sealed class HomeBlock {
     abstract val type: String
 }
 
 @Serializable
-@SerialName("greeting")
+//@SerialName("greeting")
 data class GreetingBlock(
     override val type: String,
     val title: String
 ) : HomeBlock()
 
 @Serializable
-@SerialName("hero")
+//@SerialName("hero")
 data class HeroBlock(
     override val type: String,
     val title: String,
@@ -30,7 +30,7 @@ data class HeroBlock(
 ) : HomeBlock()
 
 @Serializable
-@SerialName("myClub")
+//@SerialName("myClub")
 data class MyClubBlock(
     override val type: String,
     val name: String,
@@ -40,7 +40,7 @@ data class MyClubBlock(
 ) : HomeBlock()
 
 @Serializable
-@SerialName("classCarousel")
+//@SerialName("classCarousel")
 data class ClassCarouselBlock(
     override val type: String,
     val title: String,
@@ -49,7 +49,7 @@ data class ClassCarouselBlock(
 ) : HomeBlock()
 
 @Serializable
-@SerialName("myRewards")
+//@SerialName("myRewards")
 data class MyRewardsBlock(
     override val type: String,
     val title: String,
@@ -57,7 +57,7 @@ data class MyRewardsBlock(
 ) : HomeBlock()
 
 @Serializable
-@SerialName("myGoals")
+//@SerialName("myGoals")
 data class MyGoalsBlock(
     override val type: String,
     val title: String,
@@ -74,7 +74,7 @@ data class PromotionBlock(
 ) : HomeBlock()
 
 @Serializable
-@SerialName("experimental")
+//@SerialName("experimental")
 data class ExperimentalBlock(
     override val type: String,
     val payload: JsonObject
@@ -107,3 +107,9 @@ data class CardItem(
     val imageRef: String?,
     val badge: String? = null
 )
+
+@Serializable
+data class UnknownBlock(
+    override val type: String,
+    val raw: JsonObject
+) : HomeBlock()
