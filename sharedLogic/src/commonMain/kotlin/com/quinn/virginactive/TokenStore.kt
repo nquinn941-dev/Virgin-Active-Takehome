@@ -22,7 +22,7 @@ internal class TokenStore constructor(
 
         val expiryInstant = Instant.parse(expiryString)
 
-        return if (expiryInstant.plus(60.seconds) > Clock.System.now()) {
+        return if (expiryInstant.minus(60.seconds) < Clock.System.now()) {
             refresh(refreshToken)
         } else {
             AuthToken(
