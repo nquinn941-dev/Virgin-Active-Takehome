@@ -2,12 +2,12 @@ package com.quinn.virginactive.timetable.usecases
 
 import com.quinn.virginactive.timetable.ClassListViewData
 import com.quinn.virginactive.timetable.ClassRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 
 class GetClassesViewDataUseCase internal constructor(
     private val classRepository: ClassRepository
 ) {
 
-    suspend fun getClassesViewData(clubId: String) = classRepository.getClasses(clubId = clubId, forceRefresh = false)
+    suspend fun getClassesViewData(): ClassListViewData {
+        return classRepository.getClasses(forceRefresh = false)
+    }
 }

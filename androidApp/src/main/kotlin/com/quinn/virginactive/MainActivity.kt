@@ -13,6 +13,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,8 +34,10 @@ import com.quinn.virginactive.home.HomeScreen
 import com.quinn.virginactive.login.LoginScreen
 import com.quinn.virginactive.timetable.TimetableScreen
 import com.quinn.virginactive.uicompose.VirginActiveTheme
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import org.koin.compose.koinInject
 
 @Serializable
 object Login
@@ -61,6 +65,18 @@ class MainActivity : ComponentActivity() {
                 val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
                 val snackbarHostState = remember { SnackbarHostState() }
                 val coroutineScope = rememberCoroutineScope()
+                val userRepo = koinInject<UserManager>()
+                val userState by userRepo.observeUserState().collectAsState()
+
+                LaunchedEffect(userState) {
+                    if (userState is UserState.LoggedOut) {
+                        navController.navigate(Login) {
+                            popUpTo(navController.graph.id) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                }
 
                 Scaffold(
                     topBar = {

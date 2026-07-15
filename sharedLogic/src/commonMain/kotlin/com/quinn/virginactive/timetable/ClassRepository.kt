@@ -28,8 +28,6 @@ internal class ClassRepository constructor(
 ) {
 
     private val _classes = MutableStateFlow(ClassListViewData(clubId = "", classesPerDay = emptyMap()))
-//    val classes: StateFlow<ClassListViewData> = _classes
-    private val refreshMutex = Mutex()
     private var lastFetchedAt: Instant? = null
 
     init {
@@ -38,26 +36,15 @@ internal class ClassRepository constructor(
         }
     }
 
-    suspend fun getClasses(clubId: String, forceRefresh: Boolean) : ClassListViewData {
+    suspend fun getClasses(forceRefresh: Boolean) : ClassListViewData {
+        val loggedInUser = userManager.getLoggedInUser()
         val cacheIsValid =
             !forceRefresh && lastFetchedAt != null && lastFetchedAt!!.plus(cacheDuration) > Clock.System.now()
         if (cacheIsValid) return _classes.value
-        val response = classApi.getTimetable(clubId, date = null)
+        val response = classApi.getTimetable(loggedInUser.clubInfo.id, date = null)
         _classes.value =  classListViewDataMapper.mapToClassListViewData(response)
         lastFetchedAt = Clock.System.now()
         return _classes.value
-    }
-
-    suspend fun refreshClasses(clubId: String, forceRefresh: Boolean = false) {
-        refreshMutex.withLock {
-            val cacheIsValid =
-                !forceRefresh && lastFetchedAt != null && lastFetchedAt!!.plus(cacheDuration) < Clock.System.now()
-
-            if (cacheIsValid) return
-        }
-        val response = classApi.getTimetable(clubId, date = null)
-        _classes.value =  classListViewDataMapper.mapToClassListViewData(response)
-        lastFetchedAt = Clock.System.now()
     }
 
     private fun invalidateCache() {
@@ -67,12 +54,8 @@ internal class ClassRepository constructor(
     suspend fun getClass(classId: String) : ClassViewData? {
         return if (_classes.value.clubId.isEmpty()) {
             //Assuming this means havent viewed the timetable yet, so refresh
-            val user = (userManager.getUserStateSnapshot() as? UserState.LoggedIn)?.user ?: return null
-            val classes = getClasses(user.clubInfo.id, forceRefresh = true)
+            val classes = getClasses(forceRefresh = true)
             classes.classesPerDay.flatMap { it.value }.firstOrNull { it.classId == classId }
-//             _classes.map {
-//                it.classesPerDay.flatMap { it.value }.firstOrNull { it.classId == classId }
-//            }
         } else {
             _classes.value.classesPerDay.flatMap { it.value }.firstOrNull { it.classId == classId }
         }
@@ -99,9 +82,9 @@ internal class ClassRepository constructor(
     }
 
     suspend fun cancelClassBooking(classId: String): ClassViewData {
-        val user = (userManager.getUserStateSnapshot() as? UserState.LoggedIn)?.user ?: throw IllegalStateException("Not Logged in")
+        val user = userManager.getLoggedInUser()
         classApi.cancelBooking(user.clubInfo.id, classId)
-        val classes = getClasses(user.clubInfo.id, forceRefresh = true)
+        val classes = getClasses(forceRefresh = true)
         return classes.classesPerDay.flatMap { it.value }.first { it.classId == classId }
     }
 }

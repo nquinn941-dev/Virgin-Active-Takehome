@@ -28,6 +28,7 @@ import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.http.HttpMethod
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -97,7 +98,10 @@ fun sharedModule() = module {
             }
 
             install(HttpRequestRetry) {
-                retryOnServerErrors(maxRetries = 3)
+                maxRetries = 3
+                retryIf { request, response ->
+                    response.status.value >= 500 && request.method != HttpMethod.Post
+                }
                 exponentialDelay()
             }
 

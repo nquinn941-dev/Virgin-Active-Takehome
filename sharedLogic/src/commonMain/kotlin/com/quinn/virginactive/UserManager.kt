@@ -13,6 +13,8 @@ import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 
+class NotLoggedInException : Exception()
+
 sealed class UserState {
     object Loading : UserState()
     data class LoggedIn(val user: User) : UserState()
@@ -25,6 +27,8 @@ interface UserRepo {
     suspend fun login(request: LoginRequest)
 
     fun getUserStateSnapshot() : UserState
+
+    suspend fun logout()
 }
 
 class UserManager internal constructor(
@@ -78,5 +82,13 @@ class UserManager internal constructor(
 
     override fun getUserStateSnapshot(): UserState {
         return userState.value
+    }
+
+    @Throws(NotLoggedInException::class)
+    fun getLoggedInUser() : User = (userState.value as? UserState.LoggedIn)?.user ?: throw NotLoggedInException()
+
+    override suspend fun logout() {
+        userState.value = UserState.LoggedOut
+        tokenStore.clearToken()
     }
 }

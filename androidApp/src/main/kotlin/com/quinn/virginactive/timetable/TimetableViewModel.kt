@@ -26,19 +26,15 @@ internal class TimetableViewModel(
 
     fun loadTimetable() {
         _state.value = State.Loading
-        val user = (userManager.getUserStateSnapshot() as? UserState.LoggedIn)?.user
-        user?.let {
-            try {
-                viewModelScope.launch {
-                    val viewData = getClassesViewDataUseCase.getClassesViewData(clubId = it.clubInfo.id)
-                    _state.value = State.Loaded(viewData)
-                }
+        viewModelScope.launch {
+            _state.value = try {
+                val viewData = getClassesViewDataUseCase.getClassesViewData()
+                State.Loaded(viewData)
             } catch (ex: Exception) {
                 ex.printStackTrace()
-                _state.value = State.Error(ex.message ?: "Unknown error")
+                State.Error(ex.message ?: "Unknown error")
             }
-        } ?: {
-            _state.value = State.Error("User not found")
         }
+
     }
 }
